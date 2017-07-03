@@ -13,3 +13,5 @@ examples.forEach(([app, readme]) => {
   let elem = createAppElement(document, readme)
   app(elem)
 })
+
+require('./sakura.css')
