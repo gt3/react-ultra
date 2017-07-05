@@ -1,0 +1,50 @@
+/* Use flexible layout with flexbox */
+/* source: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout/Using_CSS_flexible_boxes */
+
+#main {
+  display: flex;
+}
+
+#main > article {
+  flex: 3 1 54%;
+  order: 2;
+}
+
+#main > nav {
+  background: #eee;
+  flex: 1 6 23%;
+  order: 1;
+}
+
+#main > aside {
+  background: #eee;
+  flex: 1 6 23%;
+  order: 3;
+}
+
+header {
+  display: block;
+  min-height: 100px;
+  background: #f5f5f5;
+}
+
+/* Too narrow to support three columns */
+@media all and (max-width: 640px) {
+  #main {
+    flex-direction: column;
+  }
+
+  #main > article,
+  #main > nav,
+  #main > aside {
+    /* Return them to document order */
+    order: 0;
+  }
+
+  #main > nav,
+  #main > aside,
+  header {
+    min-height: 50px;
+    max-height: 50px;
+  }
+}

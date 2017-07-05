@@ -2,6 +2,7 @@ import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import { a, spec, check, match, prefixMatch, container, appendPath, parseQS } from 'ultra'
+require('./layout.css')
 
 function pipe(...fns) {
   function invoke(v) {
@@ -37,12 +38,14 @@ class App extends Component {
     let values = this.state
     return (
       <div>
-        <aside>{Nav(values)}</aside>,
-        <div>
-          <SelectCurrency {...values} />
+        <header><SelectCurrency {...values} /></header>
+      <div id="main">
+        <nav>{Nav(values)}</nav>,
+        <article>
           <SelectVehicle {...values} />
           {values.vid && <Price {...values} />}
-        </div>
+        </article>
+      </div>
       </div>
     )
   }
@@ -52,14 +55,12 @@ let SelectCurrency = ({curr}) => {
   let encoded = [encodeURIComponent('$'), encodeURIComponent('€')]
   let hrefUSD = `${location.pathname}?curr=${encoded[0]}`
   let hrefEUR = `${location.pathname}?curr=${encoded[1]}`
-  let href999 = `${location.pathname}?curr=999`
   let hrefBoth = `${location.pathname}?curr=${encoded[0]}&curr=${encoded[1]}`
   let style = key => curr && curr.includes(key) ? {border: 'solid'} : null
   return (
-    <ul key='currency'>
+    <ul key='currency' style={{float: 'right'}}>
       <li><A href={hrefUSD} retain='' style={style('$')}>usd</A></li>
       <li><A href={hrefEUR} retain='' style={style('€')}>eur</A></li>
-      <li><A href={href999} retain='' style={style('999')}>999</A></li>
       <li><A href={hrefBoth} retain=''>both</A></li>
     </ul>
   )
