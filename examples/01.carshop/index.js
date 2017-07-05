@@ -37,9 +37,12 @@ class App extends Component {
     let values = this.state
     return (
       <div>
-        <SelectCurrency {...values} />
-        <SelectVehicle {...values} />
-        { values.vid && <Price {...values} /> }
+        <aside>{Nav(values)}</aside>,
+        <div>
+          <SelectCurrency {...values} />
+          <SelectVehicle {...values} />
+          {values.vid && <Price {...values} />}
+        </div>
       </div>
     )
   }
@@ -81,6 +84,15 @@ let Items = ({data, selected, hrefPrefix=''}) => {
       </A>
     </li>
   )
+}
+
+let Nav = ({ vid }) => {
+  let models = Object.keys(_data).map(year =>
+    Object.keys(_data[year]).map(make =>
+      Items({ data: _data[year][make], selected: vid, hrefPrefix: `/${year}/${make}` })
+    )
+  )
+  return <ul key="nav">{models}</ul>
 }
 
 let SelectVehicle = ({year, make, vid}) => {
