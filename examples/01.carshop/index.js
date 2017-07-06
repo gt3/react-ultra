@@ -39,7 +39,7 @@ class App extends Component {
       <div>
         <header><SelectCurrency {...values} /></header>
       <div id="main">
-        <nav>{Nav(values)}</nav>,
+        <nav>{Nav(values)}</nav>
         <article>
           <SelectVehicle {...values} />
           {values.vid && <Price {...values} />}
@@ -57,7 +57,7 @@ let SelectCurrency = ({curr}) => {
   let hrefBoth = `${location.pathname}?curr=${encoded[0]}&curr=${encoded[1]}`
   let style = key => curr && curr.includes(key) ? {border: 'solid'} : null
   return (
-    <ul key='currency' style={{float: 'right'}}>
+    <ul key='currency' style={{float: 'right'}} className="flat">
       <li><A href={hrefUSD} retain='' style={style('$')}>usd</A></li>
       <li><A href={hrefEUR} retain='' style={style('€')}>eur</A></li>
       <li><A href={hrefBoth} retain=''>both</A></li>
@@ -69,7 +69,7 @@ let Price = ({vid, curr}) => {
   let [i, j = i] = (curr || ['$']).map(c => ['$','€'].indexOf(c))
   let price = _priceData[vid].slice(i, j+1)
   return (
-    <ul key='price'>
+    <ul key="price">
       <li><em>{price.toString()}</em></li>
     </ul>
   )

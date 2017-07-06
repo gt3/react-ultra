@@ -24,7 +24,7 @@
 
 header {
   display: block;
-  min-height: 100px;
+  min-height: 50px;
   background: #f5f5f5;
 }
 
@@ -47,4 +47,9 @@ header {
     min-height: 50px;
     max-height: 50px;
   }
+}
+
+ul.flat > li {
+  display: inline;
+  margin: auto 5px;
 }
