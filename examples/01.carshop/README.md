@@ -1,4 +1,4 @@
-## Car Shop example with setState
+## Car Shop example
 
 
 ---

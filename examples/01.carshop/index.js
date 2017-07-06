@@ -2,7 +2,6 @@ import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import { a, spec, check, match, prefixMatch, container, appendPath, parseQS } from 'ultra'
-require('./layout.css')
 
 function pipe(...fns) {
   function invoke(v) {
@@ -128,12 +127,15 @@ export default (node) => render(<App />, node)
 
 let _data = {
   2017: {
-    porsche: {
-      '607': '911 Turbo S 607',
-      '3rs': 'GT3 RS'
+    acura: {
+      'nsx': 'NSX'
     },
     bmw: {
       'bm5': 'M5'
+    },
+    porsche: {
+      '607': '911 Turbo S 607',
+      '3rs': 'GT3 RS'
     }
   },
   2018: {
@@ -148,10 +150,13 @@ let _data = {
 }
 
 let _priceData = {
+  'bm5': ['$77,000', '€77,009'],
+  'nsx': ['$156,000', '€156,009'],
   '607': ['$109,000', '€109,009'],
   '3rs': ['$200,000', '€200,009'],
-  'bm5': ['$77,000', '€77,009'],
   'aa8': ['$85,000', '€85,009'],
   'sq5': ['$80,000', '€80,009'],
   'rrv': ['$70,000', '€70,009']
 }
+
+require('./layout.css')
