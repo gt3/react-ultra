@@ -4,6 +4,7 @@
   "description": "Ultra router for React apps",
   "main": "index.js",
   "scripts": {
+    "format": "prettier --no-semi --single-quote --print-width 100 --write \"examples/**/*.js\"",
     "start": "webpack-dev-server"
   },
   "repository": "gt3/ultra-react",
@@ -17,11 +18,15 @@
     "glob": "^7.1.2",
     "html-loader": "^0.4.5",
     "markdown-loader": "^2.0.0",
+    "prettier": "^1.5.2",
     "prop-types": "^15.5.10",
     "react": "^16.0.0-alpha.13",
     "react-dom": "^16.0.0-alpha.13",
     "style-loader": "^0.18.2",
     "webpack": "^3.0.0",
     "webpack-dev-server": "^2.5.0"
+  },
+  "dependencies": {
+    "ultra": "^0.6.1"
   }
 }

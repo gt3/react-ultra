@@ -11,13 +11,13 @@
 }
 
 #main > nav {
-  background: #eee;
+  background: #fafafa;
   flex: 1 6 23%;
   order: 1;
 }
 
 #main > aside {
-  background: #eee;
+  background: #fafafa;
   flex: 1 6 23%;
   order: 3;
 }
@@ -25,28 +25,7 @@
 header {
   display: block;
   min-height: 50px;
-  background: #f5f5f5;
-}
-
-/* Too narrow to support three columns */
-@media all and (max-width: 640px) {
-  #main {
-    flex-direction: column;
-  }
-
-  #main > article,
-  #main > nav,
-  #main > aside {
-    /* Return them to document order */
-    order: 0;
-  }
-
-  #main > nav,
-  #main > aside,
-  header {
-    min-height: 50px;
-    max-height: 50px;
-  }
+  background: #fafafa;
 }
 
 ul.flat > li {
