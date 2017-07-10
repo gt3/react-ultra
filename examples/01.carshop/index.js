@@ -10,7 +10,7 @@ function pipe(...fns) {
   return invoke
 }
 
-let createMatch = select => {
+let createMatch = (select) => {
   let transform = ({ values: [year, make, vid], prefix, pValues }) =>
     Object.assign({ year, make, vid }, prefix && { curr: pValues[0].split(',') })
   let specSelect = spec('/', '/:year', '/:year/:make', '/:year/:make/:vid')(pipe(transform, select))
@@ -27,8 +27,9 @@ class App extends Component {
     this.matchers = createMatch(this.setState.bind(this))
   }
   componentDidMount() {
-    let { ultra } = props
-    this.ultra = container([...this.matchers, ultra.matchers], null, ultra, false)
+    let { ultra } = this.props
+    //[...this.matchers, ultra.matchers],
+    this.ultra = container(this.matchers, null, ultra, false)
   }
   componentWillUnmount() {
     App.a = null

@@ -7,7 +7,6 @@ function requireAllDefaults(ctx, readmesCtx, readmesMap) {
   let getReadmeKey = i => (readmesMap[i] >= 0 ? readmeKeys[readmesMap[i]] : void 0)
   return ctx.keys().map((moduleKey, i) => {
     let readmeKey = getReadmeKey(i), pathKey = encodeURI(moduleKey.split('/').slice(-2)[0])
-    console.log(pathKey)
     return [pathKey, ctx(moduleKey).default, readmeKey && readmesCtx(readmeKey)]
   })
 }

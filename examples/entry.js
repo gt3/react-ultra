@@ -16,7 +16,7 @@ let createAppElement = (d, readme) => {
   return d.body.insertBefore(appDiv, seperator)
 }
 let tocElem = createAppElement(document)
-let toc = examples.map(([pathKey]) => <li><A href={'/' + pathKey}>{pathKey}</A></li>)
+let toc = examples.map(([pathKey]) => <li key={pathKey}><A href={'/' + pathKey}>{pathKey}</A></li>)
 let TOC = () => <ul>{toc}</ul>
 let renderTOC = () => render(<TOC />, tocElem, runUltra)
 
