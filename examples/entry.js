@@ -16,13 +16,15 @@ let createAppElement = (d, readme) => {
   return d.body.insertBefore(appDiv, seperator)
 }
 let tocElem = createAppElement(document)
-let TOC = () => examples.map(([pathKey]) => <A href={'/' + pathKey}>{pathKey}</A>)
+let toc = examples.map(([pathKey]) => <A href={'/' + pathKey}>{pathKey}</A>)
+let TOC = () => toc
 
 let exampleSpecs = examples.map(([pathKey, app, readme]) => {
   let elem = createAppElement(document, readme)
   return spec(`/${pathKey}`)(app.bind(null, elem, A))
 })
-//exampleSpecs.push(spec('/', toc))
-let runUltra = () => _ultra = container(match(exampleSpecs, null, _ultra, false));
+exampleSpecs.push(spec('/', () => render(<TOC />, tocElem, runUltra)))
 
-render(<TOC examples/>, tocElem, runUltra)
+let runUltra = () => container(match(exampleSpecs, null, _ultra));
+
+runUltra()

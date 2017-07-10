@@ -1,7 +1,7 @@
 import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
-import { a, spec, check, match, prefixMatch, container, appendPath, parseQS } from 'ultra'
+import { spec, check, match, prefixMatch, container, appendPath, parseQS } from 'ultra'
 
 function pipe(...fns) {
   function invoke(v) {
@@ -9,10 +9,6 @@ function pipe(...fns) {
   }
   return invoke
 }
-
-let _ultra,
-  A = props => <a.link {...props} />
-A.defaultProps = { createElement: React.createElement, getUltra: () => _ultra }
 
 let createMatch = select => {
   let transform = ({ values: [year, make, vid], prefix, pValues }) =>
@@ -26,14 +22,17 @@ let createMatch = select => {
 class App extends Component {
   constructor(props) {
     super(props)
+    App.a = props.A
     this.state = {}
     this.matchers = createMatch(this.setState.bind(this))
   }
   componentDidMount() {
-    _ultra = container(this.matchers)
+    let { ultra } = props
+    this.ultra = container([...this.matchers, ultra.matchers], null, ultra, false)
   }
   componentWillUnmount() {
-    _ultra.stop()
+    App.a = null
+    this.ultra.stop()
   }
   render() {
     let values = this.state
@@ -65,19 +64,19 @@ let SelectCurrency = ({ curr }) => {
   return (
     <ul key="currency" style={{ float: 'right' }} className="flat">
       <li>
-        <A href={hrefUSD} retain="" style={style('$')}>
+        <App.a href={hrefUSD} retain="" style={style('$')}>
           usd
-        </A>
+        </App.a>
       </li>
       <li>
-        <A href={hrefEUR} retain="" style={style('€')}>
+        <App.a href={hrefEUR} retain="" style={style('€')}>
           eur
-        </A>
+        </App.a>
       </li>
       <li>
-        <A href={hrefBoth} retain="">
+        <App.a href={hrefBoth} retain="">
           both
-        </A>
+        </App.a>
       </li>
     </ul>
   )
@@ -101,9 +100,9 @@ let Items = ({ data, selected, hrefPrefix = '' }) => {
   let style = key => (selected === key ? { border: 'solid' } : null)
   return Object.keys(data).map(val =>
     <li key={val}>
-      <A href={`${hrefPrefix}/${val}`} style={style(val)} retain="qs">
+      <App.a href={`${hrefPrefix}/${val}`} style={style(val)} retain="qs">
         {typeof data[val] === 'string' ? data[val] : val}
-      </A>
+      </App.a>
     </li>
   )
 }
@@ -153,7 +152,7 @@ let Model = ({ year, make, vid }) => {
   )
 }
 
-export default node => render(<App />, node)
+export default (node, A, { ultra }) => render(<App A={A} ultra={ultra} />, node)
 
 let _data = {
   2017: {
