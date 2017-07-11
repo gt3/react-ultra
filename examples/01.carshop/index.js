@@ -19,7 +19,7 @@ let createMatch = (select) => {
   let addCurrency = ({ qs, path }) => appendPath(parseQS(qs, ['curr']), path)
   let allChecks = Object.assign({}, yearCheck, currCheck)
   return [
-    prefixMatch(':curr', match(specSelect, allChecks, addCurrency)),
+    prefixMatch(':curr', match(specSelect, allChecks), addCurrency),
     match(specSelect, yearCheck)
   ]
 }
@@ -37,6 +37,7 @@ class App extends Component {
     this.ultra = container([...this.matchers, ...ultra.matchers], null, ultra, false)
   }
   componentWillUnmount() {
+    console.log('willUnmount xxx')
     App.a = null
     this.ultra.stop()
   }
@@ -158,7 +159,14 @@ let Model = ({ year, make, vid }) => {
   )
 }
 
-export default (node, { ultra }) => render(<App ultra={ultra} />, node)
+export default (node, ultra, readme) => 
+  render(
+    <div>
+      {readme && <div dangerouslySetInnerHTML={{ __html: readme }} />}
+      <App ultra={ultra} />
+    </div>,
+    node
+  )
 
 let _data = {
   2017: {

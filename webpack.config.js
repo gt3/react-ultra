@@ -3,7 +3,6 @@ var path = require('path')
 var glob = require("glob")
 
 var {examplesDir, readmesDir, examplesRegex, readmesRegex, readmesMap} = getExamplesConfig()
-console.log(examplesDir, readmesDir, readmesMap)
 module.exports = {
   devtool: "source-map",
   entry: './examples/entry.js',
