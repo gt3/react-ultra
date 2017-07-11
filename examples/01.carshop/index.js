@@ -1,7 +1,7 @@
 import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
-import { a, spec, check, match, prefixMatch, container, appendPath, parseQS } from 'ultra'
+import { spec, check, match, prefixMatch, toggle, appendPath, parseQS } from 'ultra'
 
 function pipe(...fns) {
   function invoke(v) {
@@ -10,7 +10,7 @@ function pipe(...fns) {
   return invoke
 }
 
-let createMatch = (select) => {
+let createMatch = (select, staticPathKey) => {
   let transform = ({ values: [year, make, vid], prefix, pValues }) => 
     Object.assign({ year, make, vid }, prefix && {}) //{ curr: pValues[0].split(',') })
   let specSelect = spec('/:year', '/:year/:make', '/:year/:make/:vid')(pipe(transform, select))
@@ -20,24 +20,26 @@ let createMatch = (select) => {
   let allChecks = Object.assign({}, yearCheck, currCheck)
   return [
     //prefixMatch(':curr', match(specSelect, allChecks), addCurrency),
-    prefixMatch('/01.carshop', match(specSelect, yearCheck))
+    prefixMatch(staticPathKey, match(specSelect, yearCheck))
   ]
 }
 
 class App extends Component {
   constructor(props) {
     super(props)
-    App.a = props.A
     this.state = {}
-    this.matchers = createMatch(this.setState.bind(this))
   }
   componentDidMount() {
-    this.props.runUltra(this.matchers)
+    console.log('didMount +++')
+    if(App.replaceMatchers) {
+      console.log('replaceMatchers +++')
+      let matchers = createMatch(this.setState.bind(this), App.pathKey)
+      App.replaceMatchers(App.pathKey, matchers)
+      App.replaceMatchers = null
+    }
     //this.ultra = container([...this.matchers, ...ultra.matchers], null, ultra, false)
   }
   componentWillUnmount() {
-    console.log('willUnmount xxx')
-    App.a = null
   }
   render() {
     let values = this.state
@@ -115,7 +117,7 @@ let Items = ({ data, selected, hrefPrefix = '' }) => {
 let Nav = ({ vid }) => {
   let models = Object.keys(_data).map(year =>
     Object.keys(_data[year]).map(make =>
-      Items({ data: _data[year][make], selected: vid, hrefPrefix: `/01.carshop/${year}/${make}` })
+      Items({ data: _data[year][make], selected: vid, hrefPrefix: `${App.pathKey}/${year}/${make}` })
     )
   )
   return (
@@ -128,7 +130,7 @@ let Nav = ({ vid }) => {
 let SelectVehicle = ({ year, make, vid }) => {
   return (
     <ul key="vehicle">
-      {Items({ data: _data, selected: year, hrefPrefix: '/01.carshop' })}
+      {Items({ data: _data, selected: year, hrefPrefix: `${App.pathKey}` })}
       {year
         ? <ul key="make">
             <MakeModel year={year} make={make} vid={vid} />
@@ -142,7 +144,7 @@ let MakeModel = ({ year, make, vid }) => {
   let makes = _data[year]
   return (
     <ul key="make">
-      {Items({ data: makes, selected: make, hrefPrefix: `/01.carshop/${year}` })}
+      {Items({ data: makes, selected: make, hrefPrefix: `${App.pathKey}/${year}` })}
       {make ? <Model year={year} make={make} vid={vid} /> : null}
     </ul>
   )
@@ -152,19 +154,26 @@ let Model = ({ year, make, vid }) => {
   let models = _data[year][make]
   return (
     <ul key="model">
-      {Items({ data: models, selected: vid, hrefPrefix: `/01.carshop/${year}/${make}` })}
+      {Items({ data: models, selected: vid, hrefPrefix: `${App.pathKey}/${year}/${make}` })}
     </ul>
   )
 }
 
-export default (node, runUltra, A) => 
-  render(
-    <div>
-      {/*readme && <div dangerouslySetInnerHTML={{ __html: readme }} />*/}
-      <App runUltra={runUltra} A={A} />
-    </div>,
-    node
-  )
+export default (node, runUltra, replaceMatchers, A, pathKey) => {
+  App.a = A
+  App.pathKey = pathKey
+  App.replaceMatchers = replaceMatchers
+  let matcherPlaceholder = toggle(match({}), pathKey)
+  runUltra(curr => [...curr, matcherPlaceholder])
+  return () => render(<App />, node)
+}
+  // render(
+  //   <div>
+  //     {/*readme && <div dangerouslySetInnerHTML={{ __html: readme }} />*/}
+  //     <App runUltra={runUltra} A={A} />
+  //   </div>,
+  //   node
+  // )
 
 let _data = {
   2017: {
