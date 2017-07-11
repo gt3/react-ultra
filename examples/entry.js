@@ -14,15 +14,16 @@ let createAppElement = (d, readme) => {
 let tocElem = createAppElement(document)
 let toc = examples.map(([pathKey]) => <li key={pathKey}><A href={'/' + pathKey}>{pathKey}</A></li>)
 let TOC = () => <ul>{toc}</ul>
-let renderTOC = () => render(<TOC />, tocElem, runUltra)
+let renderTOC = () => render(<TOC />, tocElem)
 
 let exampleElem = createAppElement(document)
 let exampleSpecs = examples.map(([pathKey, app, readme]) => {
   //let elem  = createAppElement(document, readme)
-  return spec(`/${pathKey}`)(() => app(exampleElem, runUltra(), readme))
+  return spec(`/${pathKey}`)(() => app(exampleElem, runUltra, A))
 })
 exampleSpecs.push(spec('/')(renderTOC))
 
-let runUltra = () => _ultra = container(match(exampleSpecs), null, _ultra, false);
+let runUltra = (prependMatchers, dispatchCurrent) => 
+_ultra = container(_ultra ? [...prependMatchers, ..._ultra.matchers]: prependMatchers, null, _ultra, dispatchCurrent);
 
-renderTOC()
+runUltra(match(exampleSpecs, true))

@@ -12,34 +12,32 @@ function pipe(...fns) {
 
 let createMatch = (select) => {
   let transform = ({ values: [year, make, vid], prefix, pValues }) => 
-    Object.assign({ year, make, vid }, prefix && { curr: pValues[0].split(',') })
+    Object.assign({ year, make, vid }, prefix && {}) //{ curr: pValues[0].split(',') })
   let specSelect = spec('/:year', '/:year/:make', '/:year/:make/:vid')(pipe(transform, select))
   let yearCheck = check(':year')(/^[0-9]{4}$/)
   let currCheck = check(':curr')(/^\$(,€)?$|^€(,\$)?$/)
   let addCurrency = ({ qs, path }) => appendPath(parseQS(qs, ['curr']), path)
   let allChecks = Object.assign({}, yearCheck, currCheck)
   return [
-    prefixMatch(':curr', match(specSelect, allChecks), addCurrency),
-    match(specSelect, yearCheck)
+    //prefixMatch(':curr', match(specSelect, allChecks), addCurrency),
+    prefixMatch('/01.carshop', match(specSelect, yearCheck))
   ]
 }
 
 class App extends Component {
   constructor(props) {
     super(props)
-    App.a = props => <a.link {...props} />
-    App.a.defaultProps = { createElement: React.createElement, getUltra: () => this.ultra }
+    App.a = props.A
     this.state = {}
     this.matchers = createMatch(this.setState.bind(this))
   }
   componentDidMount() {
-    let { ultra } = this.props
-    this.ultra = container([...this.matchers, ...ultra.matchers], null, ultra, false)
+    this.props.runUltra(this.matchers)
+    //this.ultra = container([...this.matchers, ...ultra.matchers], null, ultra, false)
   }
   componentWillUnmount() {
     console.log('willUnmount xxx')
     App.a = null
-    this.ultra.stop()
   }
   render() {
     let values = this.state
@@ -117,7 +115,7 @@ let Items = ({ data, selected, hrefPrefix = '' }) => {
 let Nav = ({ vid }) => {
   let models = Object.keys(_data).map(year =>
     Object.keys(_data[year]).map(make =>
-      Items({ data: _data[year][make], selected: vid, hrefPrefix: `/${year}/${make}` })
+      Items({ data: _data[year][make], selected: vid, hrefPrefix: `/01.carshop/${year}/${make}` })
     )
   )
   return (
@@ -130,7 +128,7 @@ let Nav = ({ vid }) => {
 let SelectVehicle = ({ year, make, vid }) => {
   return (
     <ul key="vehicle">
-      {Items({ data: _data, selected: year })}
+      {Items({ data: _data, selected: year, hrefPrefix: '/01.carshop' })}
       {year
         ? <ul key="make">
             <MakeModel year={year} make={make} vid={vid} />
@@ -144,7 +142,7 @@ let MakeModel = ({ year, make, vid }) => {
   let makes = _data[year]
   return (
     <ul key="make">
-      {Items({ data: makes, selected: make, hrefPrefix: `/${year}` })}
+      {Items({ data: makes, selected: make, hrefPrefix: `/01.carshop/${year}` })}
       {make ? <Model year={year} make={make} vid={vid} /> : null}
     </ul>
   )
@@ -154,16 +152,16 @@ let Model = ({ year, make, vid }) => {
   let models = _data[year][make]
   return (
     <ul key="model">
-      {Items({ data: models, selected: vid, hrefPrefix: `/${year}/${make}` })}
+      {Items({ data: models, selected: vid, hrefPrefix: `/01.carshop/${year}/${make}` })}
     </ul>
   )
 }
 
-export default (node, ultra, readme) => 
+export default (node, runUltra, A) => 
   render(
     <div>
-      {readme && <div dangerouslySetInnerHTML={{ __html: readme }} />}
-      <App ultra={ultra} />
+      {/*readme && <div dangerouslySetInnerHTML={{ __html: readme }} />*/}
+      <App runUltra={runUltra} A={A} />
     </div>,
     node
   )
