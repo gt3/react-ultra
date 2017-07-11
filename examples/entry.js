@@ -22,10 +22,10 @@ let renderTOC = () => render(<TOC />, tocElem, runUltra)
 
 let exampleSpecs = examples.map(([pathKey, app, readme]) => {
   let elem = createAppElement(document, readme)
-  return spec(`/${pathKey}`)(app.bind(null, elem, A))
+  return spec(`/${pathKey}`)(app.bind(null, elem))
 })
 exampleSpecs.push(spec('/')(renderTOC))
 
-let runUltra = () => _ultra = container(match(exampleSpecs), null, _ultra);
+let runUltra = () => _ultra = container(match(exampleSpecs), null, _ultra, false);
 
-runUltra()
+renderTOC()

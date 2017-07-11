@@ -1,7 +1,7 @@
 import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
-import { spec, check, match, prefixMatch, container, appendPath, parseQS } from 'ultra'
+import { a, spec, check, match, prefixMatch, container, appendPath, parseQS } from 'ultra'
 
 function pipe(...fns) {
   function invoke(v) {
@@ -11,25 +11,30 @@ function pipe(...fns) {
 }
 
 let createMatch = (select) => {
-  let transform = ({ values: [year, make, vid], prefix, pValues }) =>
+  let transform = ({ values: [year, make, vid], prefix, pValues }) => 
     Object.assign({ year, make, vid }, prefix && { curr: pValues[0].split(',') })
-  let specSelect = spec('/', '/:year', '/:year/:make', '/:year/:make/:vid')(pipe(transform, select))
-  let currCheck = check(':curr')(/^$|^\$(,€)?$|^€(,\$)?$/)
+  let specSelect = spec('/:year', '/:year/:make', '/:year/:make/:vid')(pipe(transform, select))
+  let yearCheck = check(':year')(/^[0-9]{4}$/)
+  let currCheck = check(':curr')(/^\$(,€)?$|^€(,\$)?$/)
   let addCurrency = ({ qs, path }) => appendPath(parseQS(qs, ['curr']), path)
-  return [prefixMatch(':curr', match(specSelect, currCheck), addCurrency), match(specSelect)]
+  let allChecks = Object.assign({}, yearCheck, currCheck)
+  return [
+    prefixMatch(':curr', match(specSelect, allChecks, addCurrency)),
+    match(specSelect, yearCheck)
+  ]
 }
 
 class App extends Component {
   constructor(props) {
     super(props)
-    App.a = props.A
+    App.a = props => <a.link {...props} />
+    App.a.defaultProps = { createElement: React.createElement, getUltra: () => this.ultra }
     this.state = {}
     this.matchers = createMatch(this.setState.bind(this))
   }
   componentDidMount() {
     let { ultra } = this.props
-    //[...this.matchers, ultra.matchers],
-    this.ultra = container(this.matchers, null, ultra, false)
+    this.ultra = container([...this.matchers, ...ultra.matchers], null, ultra, false)
   }
   componentWillUnmount() {
     App.a = null
@@ -153,7 +158,7 @@ let Model = ({ year, make, vid }) => {
   )
 }
 
-export default (node, A, { ultra }) => render(<App A={A} ultra={ultra} />, node)
+export default (node, { ultra }) => render(<App ultra={ultra} />, node)
 
 let _data = {
   2017: {
