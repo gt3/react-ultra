@@ -12,16 +12,11 @@ function pipe(...fns) {
 
 let createMatch = (select, staticPathKey) => {
   let transform = ({ values: [year, make, vid], prefix, pValues }) => 
-    Object.assign({ year, make, vid }, prefix && { curr: pValues[0].split(',') })
+    Object.assign({ year, make, vid }, pValues.length && { curr: pValues[0].split(',') })
   let specSelect = spec('/:year', '/:year/:make', '/:year/:make/:vid')(pipe(transform, select))
   let yearCheck = check(':year')(/^[0-9]{4}$/)
   let currCheck = check(':curr')(/^\$(,€)?$|^€(,\$)?$/)
-  //let addCurrency = ({ qs, path }) => appendPath(parseQS(qs, ['curr']), path)
-  let addCurrency = ({ qs, path }) => {
-    let res = appendPath(parseQS(qs, ['curr']), path)
-    console.log(res)
-    return res
-  }
+  let addCurrency = ({ qs, path }) => appendPath(parseQS(qs, ['curr']), path)
   let allChecks = Object.assign({}, yearCheck, currCheck)
   return [
     prefixMatch(staticPathKey, prefixMatch(':curr', match(specSelect, allChecks), addCurrency)),
