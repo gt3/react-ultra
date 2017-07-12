@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import { spec, check, match, prefixMatch, toggle, appendPath, parseQS } from 'ultra'
 
+let emptyMatch = match({})
+
 function pipe(...fns) {
   function invoke(v) {
     return fns.reduce((acc, fn) => (fn ? fn.call(this, acc) : acc), v)
@@ -31,15 +33,13 @@ class App extends Component {
   }
   componentDidMount() {
     console.log('didMount +++')
-    if(App.replaceMatchers) {
-      console.log('replaceMatchers +++')
-      let matchers = createMatch(this.setState.bind(this), App.pathKey)
-      App.replaceMatchers(App.pathKey, matchers)
-      App.replaceMatchers = null
-    }
+    let matchers = createMatch(this.setState.bind(this), App.pathKey)
+    App.replaceMatchers(App.pathKey, matchers)
     //this.ultra = container([...this.matchers, ...ultra.matchers], null, ultra, false)
   }
   componentWillUnmount() {
+    let placeholder = toggle(emptyMatch, App.pathKey)
+    App.replaceMatchers(App.pathKey, [placeholder, placeholder])
   }
   render() {
     let values = this.state
@@ -163,9 +163,9 @@ export default (node, runUltra, replaceMatchers, A, pathKey) => {
   App.a = A
   App.pathKey = pathKey
   App.replaceMatchers = replaceMatchers
-  let placeholder = toggle(match({}), pathKey)
+  let placeholder = toggle(emptyMatch, pathKey)
   runUltra(curr => [...curr, placeholder, placeholder])
-  return () => render(<App />, node)
+  return (msg, cb) => render(<App />, node, cb)
 }
   // render(
   //   <div>

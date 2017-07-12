@@ -27,7 +27,8 @@ let renderTOC = () => render(<TOC />, tocElem)
 let exampleElem = createAppElement(document)
 let exampleSpecs = examples.map(([pathKey, app, readme]) => {
   pathKey = `/${pathKey}`
-  return spec(pathKey)(app(exampleElem, runUltra, replaceMatchers, A, pathKey))
+  let renderApp = app(exampleElem, runUltra, replaceMatchers, A, pathKey)
+  return spec(pathKey)(renderApp, msg => renderApp(msg, () => _ultra.replace(msg.path)))
 })
 exampleSpecs.push(spec('/')(renderTOC))
 
