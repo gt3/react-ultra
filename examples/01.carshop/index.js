@@ -1,7 +1,9 @@
 import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
-import { a, spec, check, match, prefixMatch, container, appendPath, parseQS } from 'ultra'
+import { spec, check, match, prefixMatch, toggle, appendPath, parseQS } from 'ultra'
+
+let emptyMatch = match({})
 
 function pipe(...fns) {
   function invoke(v) {
@@ -10,30 +12,32 @@ function pipe(...fns) {
   return invoke
 }
 
-let _ultra,
-  A = props => <a.link {...props} />
-A.defaultProps = { createElement: React.createElement, getUltra: () => _ultra }
-
-let createMatch = select => {
-  let transform = ({ values: [year, make, vid], prefix, pValues }) =>
-    Object.assign({ year, make, vid }, prefix && { curr: pValues[0].split(',') })
-  let specSelect = spec('/', '/:year', '/:year/:make', '/:year/:make/:vid')(pipe(transform, select))
-  let currCheck = check(':curr')(/^$|^\$(,€)?$|^€(,\$)?$/)
+let createMatch = (select, staticPathKey) => {
+  let transform = ({ values: [year, make, vid], prefix, pValues }) => 
+    Object.assign({ year, make, vid }, pValues.length && { curr: pValues[0].split(',') })
+  let specSelect = spec('/:year', '/:year/:make', '/:year/:make/:vid')(pipe(transform, select))
+  let yearCheck = check(':year')(/^[0-9]{4}$/)
+  let currCheck = check(':curr')(/^\$(,€)?$|^€(,\$)?$/)
   let addCurrency = ({ qs, path }) => appendPath(parseQS(qs, ['curr']), path)
-  return [prefixMatch(':curr', match(specSelect, currCheck), addCurrency), match(specSelect)]
+  let allChecks = Object.assign({}, yearCheck, currCheck)
+  return [
+    prefixMatch(staticPathKey, prefixMatch(':curr', match(specSelect, allChecks), addCurrency)),
+    prefixMatch(staticPathKey, match(specSelect, yearCheck))
+  ]
 }
 
 class App extends Component {
   constructor(props) {
     super(props)
     this.state = {}
-    this.matchers = createMatch(this.setState.bind(this))
   }
   componentDidMount() {
-    _ultra = container(this.matchers)
+    let matchers = createMatch(this.setState.bind(this), App.pathKey)
+    App.replaceMatchers(App.pathKey, matchers)
   }
   componentWillUnmount() {
-    _ultra.stop()
+    let placeholder = toggle(emptyMatch, App.pathKey)
+    App.replaceMatchers(App.pathKey, [placeholder, placeholder])
   }
   render() {
     let values = this.state
@@ -65,19 +69,19 @@ let SelectCurrency = ({ curr }) => {
   return (
     <ul key="currency" style={{ float: 'right' }} className="flat">
       <li>
-        <A href={hrefUSD} retain="" style={style('$')}>
+        <App.a href={hrefUSD} retain="" style={style('$')}>
           usd
-        </A>
+        </App.a>
       </li>
       <li>
-        <A href={hrefEUR} retain="" style={style('€')}>
+        <App.a href={hrefEUR} retain="" style={style('€')}>
           eur
-        </A>
+        </App.a>
       </li>
       <li>
-        <A href={hrefBoth} retain="">
+        <App.a href={hrefBoth} retain="">
           both
-        </A>
+        </App.a>
       </li>
     </ul>
   )
@@ -101,9 +105,9 @@ let Items = ({ data, selected, hrefPrefix = '' }) => {
   let style = key => (selected === key ? { border: 'solid' } : null)
   return Object.keys(data).map(val =>
     <li key={val}>
-      <A href={`${hrefPrefix}/${val}`} style={style(val)} retain="qs">
+      <App.a href={`${hrefPrefix}/${val}`} style={style(val)} retain="qs">
         {typeof data[val] === 'string' ? data[val] : val}
-      </A>
+      </App.a>
     </li>
   )
 }
@@ -111,7 +115,7 @@ let Items = ({ data, selected, hrefPrefix = '' }) => {
 let Nav = ({ vid }) => {
   let models = Object.keys(_data).map(year =>
     Object.keys(_data[year]).map(make =>
-      Items({ data: _data[year][make], selected: vid, hrefPrefix: `/${year}/${make}` })
+      Items({ data: _data[year][make], selected: vid, hrefPrefix: `${App.pathKey}/${year}/${make}` })
     )
   )
   return (
@@ -124,7 +128,7 @@ let Nav = ({ vid }) => {
 let SelectVehicle = ({ year, make, vid }) => {
   return (
     <ul key="vehicle">
-      {Items({ data: _data, selected: year })}
+      {Items({ data: _data, selected: year, hrefPrefix: `${App.pathKey}` })}
       {year
         ? <ul key="make">
             <MakeModel year={year} make={make} vid={vid} />
@@ -138,7 +142,7 @@ let MakeModel = ({ year, make, vid }) => {
   let makes = _data[year]
   return (
     <ul key="make">
-      {Items({ data: makes, selected: make, hrefPrefix: `/${year}` })}
+      {Items({ data: makes, selected: make, hrefPrefix: `${App.pathKey}/${year}` })}
       {make ? <Model year={year} make={make} vid={vid} /> : null}
     </ul>
   )
@@ -148,12 +152,23 @@ let Model = ({ year, make, vid }) => {
   let models = _data[year][make]
   return (
     <ul key="model">
-      {Items({ data: models, selected: vid, hrefPrefix: `/${year}/${make}` })}
+      {Items({ data: models, selected: vid, hrefPrefix: `${App.pathKey}/${year}/${make}` })}
     </ul>
   )
 }
 
-export default node => render(<App />, node)
+export default (node, pathKey, services) => {
+  Object.assign(App, services, { pathKey })
+  let placeholder = toggle(emptyMatch, pathKey)
+  services.runUltra(curr => [...curr, placeholder, placeholder])
+  return (msg, cb) => render(
+  <div>
+    <hr />
+    <div dangerouslySetInnerHTML={{ __html: readme }} />
+    <App />
+  </div>, 
+  node, cb)
+}
 
 let _data = {
   2017: {
@@ -190,3 +205,4 @@ let _priceData = {
 }
 
 require('./layout.css')
+var readme = require('./README.md')
