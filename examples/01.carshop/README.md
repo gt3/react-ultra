@@ -8,4 +8,3 @@ Example demonstrates how to:
 - use pre-match hook to include query string value in match: `addCurrency`
 - validate identifier values with check: `currCheck `
 - use `a.link` to create React link component with `retain` query string option
- 

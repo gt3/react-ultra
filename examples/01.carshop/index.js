@@ -159,12 +159,10 @@ let Model = ({ year, make, vid }) => {
   )
 }
 
-export default (node, runUltra, replaceMatchers, A, pathKey) => {
-  App.a = A
-  App.pathKey = pathKey
-  App.replaceMatchers = replaceMatchers
+export default (node, pathKey, services) => {
+  Object.assign(App, services, { pathKey })
   let placeholder = toggle(emptyMatch, pathKey)
-  runUltra(curr => [...curr, placeholder, placeholder])
+  services.runUltra(curr => [...curr, placeholder, placeholder])
   return (msg, cb) => render(<App />, node, cb)
 }
   // render(
