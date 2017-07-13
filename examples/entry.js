@@ -15,19 +15,19 @@ let replaceMatchers = (key, replacements) => {
 }
 let services = {getUltra, runUltra, replaceMatchers, a: A}
 
-let createAppElement = (d, readme) => {
-  let appDiv = d.createElement('div')
-  return d.body.insertBefore(appDiv, null)
+let insertDiv = () => {
+  let appDiv = document.createElement('div')
+  return document.body.insertBefore(appDiv, null)
 }
-let tocElem = createAppElement(document)
+let tocDiv = insertDiv()
 let toc = examples.map(([pathKey]) => <li key={pathKey}><A href={'/' + pathKey}>{pathKey}</A></li>)
 let TOC = () => <ul>{toc}</ul>
-let renderTOC = () => render(<TOC />, tocElem)
+let renderTOC = () => render(<TOC />, tocDiv)
 
-let exampleElem = createAppElement(document)
-let exampleSpecs = examples.map(([pathKey, app, readme]) => {
+let exampleDiv = insertDiv()
+let exampleSpecs = examples.map(([pathKey, app]) => {
   pathKey = `/${pathKey}`
-  let renderApp = app(exampleElem, pathKey, services)
+  let renderApp = app(exampleDiv, pathKey, services)
   return spec(pathKey)(renderApp, msg => renderApp(msg, () => _ultra.replace(msg.path)))
 })
 exampleSpecs.push(spec('/')(renderTOC))

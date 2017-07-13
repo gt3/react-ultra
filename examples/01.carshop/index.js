@@ -32,10 +32,8 @@ class App extends Component {
     this.state = {}
   }
   componentDidMount() {
-    console.log('didMount +++')
     let matchers = createMatch(this.setState.bind(this), App.pathKey)
     App.replaceMatchers(App.pathKey, matchers)
-    //this.ultra = container([...this.matchers, ...ultra.matchers], null, ultra, false)
   }
   componentWillUnmount() {
     let placeholder = toggle(emptyMatch, App.pathKey)
@@ -163,15 +161,14 @@ export default (node, pathKey, services) => {
   Object.assign(App, services, { pathKey })
   let placeholder = toggle(emptyMatch, pathKey)
   services.runUltra(curr => [...curr, placeholder, placeholder])
-  return (msg, cb) => render(<App />, node, cb)
+  return (msg, cb) => render(
+  <div>
+    <hr />
+    <div dangerouslySetInnerHTML={{ __html: readme }} />
+    <App />
+  </div>, 
+  node, cb)
 }
-  // render(
-  //   <div>
-  //     {/*readme && <div dangerouslySetInnerHTML={{ __html: readme }} />*/}
-  //     <App runUltra={runUltra} A={A} />
-  //   </div>,
-  //   node
-  // )
 
 let _data = {
   2017: {
@@ -208,3 +205,4 @@ let _priceData = {
 }
 
 require('./layout.css')
+var readme = require('./README.md')

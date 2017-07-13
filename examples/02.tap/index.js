@@ -57,5 +57,14 @@ export default (node, pathKey, services) => {
   Object.assign(App, services, { pathKey })
   let placeholder = toggle(emptyMatch, pathKey)
   services.runUltra(curr => [...curr, placeholder])
-  return (msg, cb) => render(<App />, node, cb)
+  //return (msg, cb) => render(<App />, node, cb)
+  return (msg, cb) => render(
+  <div>
+    <hr />
+    <div dangerouslySetInnerHTML={{ __html: readme }} />
+    <App />
+  </div>, 
+  node, cb)
 }
+
+var readme = require('./README.md')

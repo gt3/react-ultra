@@ -27,6 +27,6 @@
     "webpack-dev-server": "^2.5.0"
   },
   "dependencies": {
-    "ultra": "^0.6.4"
+    "ultra": "^0.6.9"
   }
 }
