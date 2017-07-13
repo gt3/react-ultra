@@ -24,7 +24,6 @@ class App extends Component {
     super(props)
     this.state = { x: 1, tap: false }
     this.navigate = this.navigate.bind(this)
-    this.toggleTap = this.toggleTap.bind(this)
   }
   get nextLink() {
     return `${App.pathKey}/${+this.state.x+1}`
@@ -35,28 +34,22 @@ class App extends Component {
   componentDidMount() {
     let matchers = createMatch(this.setState.bind(this), App.pathKey)
     App.replaceMatchers(App.pathKey, matchers)
-    setInterval(this.navigate, 3000)
+    this.interval = setInterval(this.navigate, 3000)
   }
   componentWillUnmount() {
+    clearInterval(this.interval)
     let placeholder = toggle(emptyMatch, App.pathKey)
     App.replaceMatchers(App.pathKey, [placeholder])
-  }
-  toggleTap() {
-    this.setState(state => ({ tap: !state.tap }))
   }
 	confirm(ok, cancel) {
 		return window.confirm('Are you sure you want to navigate away?') ? ok() : cancel()
 	}
   render() {
     let {x, tap} = this.state
-		if(tap) App.getUltra().tap(this.confirm)
+    let toggleTap = cb => () => this.setState(state => ({ tap: !state.tap }), cb)
+		if(tap) App.getUltra().tap((ok, cancel) => this.confirm(toggleTap(ok), cancel))
 		else App.getUltra().untap()
-    return (
-      <div>
-        <App.a href={App.pathKey + '/' + x}>increment</App.a>
-        <button onClick={this.toggleTap}>{ tap ? 'release' : 'tap' }</button>
-      </div>
-    )
+    return <button onClick={toggleTap()}>{ tap ? 'release' : 'tap' }: {x}</button>
   }
 }
 
