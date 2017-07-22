@@ -1,13 +1,14 @@
 {
-  "name": "ultra-react",
+  "name": "react-ultra",
   "version": "0.0.1",
-  "description": "Ultra router for React apps",
-  "main": "index.js",
+  "description": "React bindings for Ultra router",
+  "main": "./lib/react-ultra.js",
+  "module": "./lib/react-ultra.mjs",
   "scripts": {
     "format": "prettier --no-semi --single-quote --print-width 100 --write \"examples/**/*.js\"",
     "start": "webpack-dev-server"
   },
-  "repository": "gt3/ultra-react",
+  "repository": "gt3/react-ultra",
   "author": "Ankit Patel <gt3.someday@gmail.com>",
   "license": "MIT",
   "devDependencies": {
@@ -28,5 +29,6 @@
   },
   "dependencies": {
     "ultra": "^0.6.9"
-  }
+  },
+  "files": [ "lib" ]
 }
