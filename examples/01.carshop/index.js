@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import { spec, check, match, prefixMatch, toggle, appendPath, parseQS } from 'ultra'
 
-let emptyMatch = match({})
+let _pathKey, emptyMatch = match({})
 
 function pipe(...fns) {
   function invoke(v) {
@@ -32,8 +32,8 @@ class App extends Component {
     this.state = {}
   }
   componentDidMount() {
-    let matchers = createMatch(this.setState.bind(this), App.pathKey)
-    App.replaceMatchers(App.pathKey, matchers)
+    let matchers = createMatch(this.setState.bind(this), _pathKey)
+    App.replaceMatchers(_pathKey, matchers)
   }
   componentWillUnmount() {
     let placeholder = toggle(emptyMatch, App.pathKey)
@@ -161,10 +161,8 @@ let Model = ({ year, make, vid }) => {
   )
 }
 
-export default (node, pathKey, services) => {
-  Object.assign(App, services, { pathKey })
-  let placeholder = toggle(emptyMatch, pathKey)
-  services.runUltra(curr => [...curr, placeholder, placeholder])
+export default (node, pathKey) => {
+  _pathKey = pathKey
   return (msg, cb) =>
     render(
       <div>
