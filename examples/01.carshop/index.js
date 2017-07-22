@@ -13,7 +13,7 @@ function pipe(...fns) {
 }
 
 let createMatch = (select, staticPathKey) => {
-  let transform = ({ values: [year, make, vid], prefix, pValues }) => 
+  let transform = ({ values: [year, make, vid], prefix, pValues }) =>
     Object.assign({ year, make, vid }, pValues.length && { curr: pValues[0].split(',') })
   let specSelect = spec('/:year', '/:year/:make', '/:year/:make/:vid')(pipe(transform, select))
   let yearCheck = check(':year')(/^[0-9]{4}$/)
@@ -115,7 +115,11 @@ let Items = ({ data, selected, hrefPrefix = '' }) => {
 let Nav = ({ vid }) => {
   let models = Object.keys(_data).map(year =>
     Object.keys(_data[year]).map(make =>
-      Items({ data: _data[year][make], selected: vid, hrefPrefix: `${App.pathKey}/${year}/${make}` })
+      Items({
+        data: _data[year][make],
+        selected: vid,
+        hrefPrefix: `${App.pathKey}/${year}/${make}`
+      })
     )
   )
   return (
@@ -161,13 +165,16 @@ export default (node, pathKey, services) => {
   Object.assign(App, services, { pathKey })
   let placeholder = toggle(emptyMatch, pathKey)
   services.runUltra(curr => [...curr, placeholder, placeholder])
-  return (msg, cb) => render(
-  <div>
-    <hr />
-    <div dangerouslySetInnerHTML={{ __html: readme }} />
-    <App />
-  </div>, 
-  node, cb)
+  return (msg, cb) =>
+    render(
+      <div>
+        <hr />
+        <div dangerouslySetInnerHTML={{ __html: readme }} />
+        <App />
+      </div>,
+      node,
+      cb
+    )
 }
 
 let _data = {

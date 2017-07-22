@@ -2,10 +2,9 @@
   "name": "react-ultra",
   "version": "0.0.1",
   "description": "React bindings for Ultra router",
-  "main": "./lib/react-ultra.js",
-  "module": "./lib/react-ultra.mjs",
+  "main": "./src/index.js",
   "scripts": {
-    "format": "prettier --no-semi --single-quote --print-width 100 --write \"examples/**/*.js\"",
+    "format": "prettier --no-semi --single-quote --print-width 100 --write \"{src,examples}/**/*.js\"",
     "start": "webpack-dev-server"
   },
   "repository": "gt3/react-ultra",
@@ -19,16 +18,20 @@
     "glob": "^7.1.2",
     "html-loader": "^0.4.5",
     "markdown-loader": "^2.0.0",
-    "prettier": "^1.5.2",
+    "prettier": "^1.5.3",
     "prop-types": "^15.5.10",
     "react": "^16.0.0-alpha.13",
     "react-dom": "^16.0.0-alpha.13",
     "style-loader": "^0.18.2",
+    "ultra": "^0.6.9",
     "webpack": "^3.0.0",
     "webpack-dev-server": "^2.5.0"
   },
-  "dependencies": {
-    "ultra": "^0.6.9"
+  "peerDependencies": {
+    "ultra": "^0.6.9",
+    "react": "^15.0.0-0 || ^16.0.0-0"
   },
-  "files": [ "lib" ]
+  "files": [
+    "src"
+  ]
 }

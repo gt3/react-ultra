@@ -4,7 +4,7 @@ import { a } from 'ultra'
 
 const A = props => <a.link {...props} />
 
-export default class Ultra extends Component {
+class Ultra extends Component {
   getChildContext() {
     A.defaultProps = { createElement, getUltra: () => this.props.ultra }
     return { A, ultra: this.props.ultra }
@@ -22,3 +22,4 @@ Ultra.childContextTypes = {
   ultra: Proptypes.object
 }
 
+module.exports = { Ultra }
