@@ -1,45 +1,41 @@
 import { Component, Children, createElement } from 'react'
 import PropTypes from 'prop-types'
-import { a, container, toggleSelected } from 'ultra'
+import { a, container } from 'ultra'
 
 const A = props => createElement(a.link, props)
 const _id = x => x
+const exclude = (ex, source) => source === ex ? [] : source.filter(s => ex.indexOf(s) === -1)
 
-class Ultra extends Component {
+export default class Ultra extends Component {
   constructor(props, ctx) {
     super(props, ctx)
     this.ultra = props.ultra
     this.run = this.run.bind(this)
-    //this.toggle = this.toggle.bind(this)
-    this.remove = this.remove.bind(this)
   }
-  run(getMatchers, getMismatchers = _id, dispatch = false) {
+  run(getMatchers, dispatch = false, getMismatchers = _id) {
     let {matchers = [], mismatchers = []} = this.ultra || {}
-    this.ultra = container(getMatchers(matchers), getMismatchers(mismatchers), this.ultra, dispatch)
-    return this.ultra
+    let newMatchers = getMatchers(matchers)
+    let newMismatchers = getMismatchers(mismatchers)
+    this.ultra = container(newMatchers, newMismatchers, this.ultra, dispatch)
+    return this.remove.bind(this, exclude(matchers, newMatchers), exclude(mismatchers, newMismatchers))
   }
-  remove(key) {
-    return this.run(curr => curr.filter(k => k !== key))
-  }
-  toggle(key, matchers) {
-    return this.run(curr => toggleSelected(curr, key, matchers))
+  remove(matchers, mismatchers) {
+    this.run(exclude.bind(null, matchers), false, exclude.bind(null, mismatchers))
   }
   getChildContext() {
     A.defaultProps = { createElement, getUltra: () => this.ultra }
-    return { A, run: this.run, remove: this.remove }
+    return { A, run: this.run }
   }
   render() {
     return Children.only(this.props.children)
   }
 }
 Ultra.propTypes = {
-  ultra: Proptypes.object.isRequired,
+  ultra: PropTypes.object.isRequired,
   children: PropTypes.element.isRequired
 }
 Ultra.childContextTypes = {
-  A: Proptypes.element,
-  run: Proptypes.func,
-  remove: Proptypes.func
+  A: PropTypes.func,
+  run: PropTypes.func
 }
 
-module.exports = { Ultra }

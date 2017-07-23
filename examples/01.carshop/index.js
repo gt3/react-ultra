@@ -1,9 +1,7 @@
 import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
-import { spec, check, match, prefixMatch, toggle, appendPath, parseQS } from 'ultra'
-
-let emptyMatch = match({})
+import { spec, check, match, prefixMatch, appendPath, parseQS } from 'ultra'
 
 function pipe(...fns) {
   function invoke(v) {
@@ -27,18 +25,21 @@ let createMatch = (select, staticPathKey) => {
 }
 
 class App extends Component {
-  constructor(props) {
-    super(props)
+  constructor(props, ctx) {
+    super(props, ctx)
     App.pathKey = props.pathKey
+    App.a = ctx.A
     this.state = {}
   }
   componentDidMount() {
     let matchers = createMatch(this.setState.bind(this), App.pathKey)
-    App.replaceMatchers(App.pathKey, matchers)
+    this.remove = this.context.run(curr => [...matchers, ...curr], this.props.runUltra)
+    //App.replaceMatchers(App.pathKey, matchers)
   }
   componentWillUnmount() {
-    let placeholder = toggle(emptyMatch, App.pathKey)
-    App.replaceMatchers(App.pathKey, [placeholder, placeholder])
+    this.remove()
+    //let placeholder = toggle(emptyMatch, App.pathKey)
+    //App.replaceMatchers(App.pathKey, [placeholder, placeholder])
   }
   render() {
     let values = this.state
@@ -60,6 +61,7 @@ class App extends Component {
     )
   }
 }
+App.contextTypes = { A: PropTypes.func, run: PropTypes.func }
 
 let SelectCurrency = ({ curr }) => {
   let encoded = [encodeURIComponent('$'), encodeURIComponent('€')]
@@ -166,7 +168,7 @@ export default (pathKey, msg) =>
   <div>
     <hr />
     <div dangerouslySetInnerHTML={{ __html: readme }} />
-    <App pathKey={pathKey} />
+    <App pathKey={pathKey} runUltra={msg && msg.path === pathKey} />
   </div>
 
 let _data = {
