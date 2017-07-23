@@ -23,8 +23,9 @@ export default class Ultra extends Component {
     this.run(exclude.bind(null, matchers), false, exclude.bind(null, mismatchers))
   }
   getChildContext() {
-    A.defaultProps = { createElement, getUltra: () => this.ultra }
-    return { A, run: this.run }
+    let getUltra = () => this.ultra
+    A.defaultProps = { createElement, getUltra }
+    return { getUltra, A, run: this.run }
   }
   render() {
     return Children.only(this.props.children)
@@ -35,6 +36,7 @@ Ultra.propTypes = {
   children: PropTypes.element.isRequired
 }
 Ultra.childContextTypes = {
+  getUltra: PropTypes.func,
   A: PropTypes.func,
   run: PropTypes.func
 }
