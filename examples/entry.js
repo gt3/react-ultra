@@ -29,7 +29,7 @@ let renderRoot = (app, msg) => render(
 let exampleSpecs = examples.map(([pathKey, app]) => {
   pathKey = `/${pathKey}`
   let render = renderRoot.bind(null, app.bind(null, pathKey))
-  return spec(pathKey)(render) //, msg => render(msg, () => msg.ultra.replace(msg.path))
+  return spec(pathKey)(render) //, msg => render(msg, () => msg.ultra.replace(msg.path)))
 })
 exampleSpecs.push(spec('/')(renderRoot.bind(null, null)))
 

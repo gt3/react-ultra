@@ -74,7 +74,7 @@ export default (pathKey, msg) =>
   <div>
     <hr />
     <div dangerouslySetInnerHTML={{ __html: readme }} />
-    <App pathKey={pathKey} runUltra={msg && msg.path === pathKey} />
+    <App pathKey={pathKey} runUltra={msg && msg.path !== pathKey} />
   </div>
 
 var readme = require('./README.md')
