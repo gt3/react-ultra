@@ -5,30 +5,29 @@ import examples from './requireExamples'
 import { Ultra } from '../src'
 require('./sakura.css')
 
-let root = document.getElementById('root')
-let toc = examples.map(([pathKey]) =>
+let _ultra, root = document.getElementById('root')
+
+let TocLinks = (props, {A}) => examples.map(([pathKey]) =>
   <li key={pathKey}>
     <A href={'/' + pathKey}>
       {pathKey}
     </A>
   </li>
 )
-let TOC = () =>
-  <ul>
-    {toc}
-  </ul>
-let renderTOC = () => render(
-  <Ultra ultra={container()}>
-    <div><TOC /></div>
-    <div></div>
+TocLinks.contextTypes = { A: PropTypes.element }
+
+let renderRoot = (app, msg, cb) => render(
+  <Ultra ultra={_ultra}>
+    <div><ul><TocLinks /></ul></div>
+    <div>{app && app(msg)}</div>
   </Ultra>
-, root)
+, root, cb)
 
 let exampleSpecs = examples.map(([pathKey, app]) => {
   pathKey = `/${pathKey}`
-  let renderApp = app(pathKey)
-  return spec(pathKey)(renderApp, msg => renderApp(msg, () => _ultra.replace(msg.path)))
+  let render = renderRoot.bind(null, app.bind(null, pathKey))
+  return spec(pathKey)(render, msg => render(msg, () => msg.ultra.replace(msg.path)))
 })
-exampleSpecs.push(spec('/')(renderTOC))
+exampleSpecs.push(spec('/')(renderRoot))
 
-runUltra(curr => [...curr, match(exampleSpecs)], true)
+_ultra = container(match(exampleSpecs), null, null, true)

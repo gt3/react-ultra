@@ -26,8 +26,7 @@ class Ultra extends Component {
   }
   getChildContext() {
     A.defaultProps = { createElement, getUltra: () => this.ultra }
-    let { ultra, run, remove } = this
-    return { A, ultra, run, remove }
+    return { A, run: this.run, remove: this.remove }
   }
   render() {
     return Children.only(this.props.children)
@@ -39,7 +38,8 @@ Ultra.propTypes = {
 }
 Ultra.childContextTypes = {
   A: Proptypes.element,
-  ultra: Proptypes.object
+  run: Proptypes.func,
+  remove: Proptypes.func
 }
 
 module.exports = { Ultra }
