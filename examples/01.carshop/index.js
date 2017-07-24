@@ -2,6 +2,7 @@ import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import { spec, check, match, prefixMatch, appendPath, parseQS } from 'ultra'
+import { A } from '../../src'
 
 function pipe(...fns) {
   function invoke(v) {
@@ -28,7 +29,6 @@ class App extends Component {
   constructor(props, ctx) {
     super(props, ctx)
     App.pathKey = props.pathKey
-    App.a = ctx.A
     this.state = {}
   }
   componentDidMount() {
@@ -61,7 +61,7 @@ class App extends Component {
     )
   }
 }
-App.contextTypes = { A: PropTypes.func, run: PropTypes.func }
+App.contextTypes = { run: PropTypes.func }
 
 let SelectCurrency = ({ curr }) => {
   let encoded = [encodeURIComponent('$'), encodeURIComponent('€')]
@@ -72,19 +72,19 @@ let SelectCurrency = ({ curr }) => {
   return (
     <ul key="currency" style={{ float: 'right' }} className="flat">
       <li>
-        <App.a href={hrefUSD} retain="" style={style('$')}>
+        <A href={hrefUSD} retain="" style={style('$')}>
           usd
-        </App.a>
+        </A>
       </li>
       <li>
-        <App.a href={hrefEUR} retain="" style={style('€')}>
+        <A href={hrefEUR} retain="" style={style('€')}>
           eur
-        </App.a>
+        </A>
       </li>
       <li>
-        <App.a href={hrefBoth} retain="">
+        <A href={hrefBoth} retain="">
           both
-        </App.a>
+        </A>
       </li>
     </ul>
   )
@@ -108,9 +108,9 @@ let Items = ({ data, selected, hrefPrefix = '' }) => {
   let style = key => (selected === key ? { border: 'solid' } : null)
   return Object.keys(data).map(val =>
     <li key={val}>
-      <App.a href={`${hrefPrefix}/${val}`} style={style(val)} retain="qs">
+      <A href={`${hrefPrefix}/${val}`} style={style(val)} retain="qs">
         {typeof data[val] === 'string' ? data[val] : val}
-      </App.a>
+      </A>
     </li>
   )
 }

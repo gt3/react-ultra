@@ -2,6 +2,7 @@ import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import { spec, check, match, prefixMatch, appendPath, parseQS } from 'ultra'
+import { A } from '../../src'
 
 function pipe(...fns) {
   function invoke(v) {
@@ -19,7 +20,6 @@ class App extends Component {
   constructor(props, ctx) {
     super(props, ctx)
     App.pathKey = props.pathKey
-    App.a = ctx.A
     this.state = { x: 1, tap: false }
     this.navigate = this.navigate.bind(this)
   }
@@ -53,7 +53,7 @@ class App extends Component {
     )
   }
 }
-App.contextTypes = { getUltra: PropTypes.func, A: PropTypes.func, run: PropTypes.func }
+App.contextTypes = { getUltra: PropTypes.func, run: PropTypes.func }
 // export default (node, pathKey, services) => {
 //   Object.assign(App, services, { pathKey })
 //   let placeholder = toggle(emptyMatch, pathKey)

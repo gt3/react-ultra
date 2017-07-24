@@ -3,19 +3,18 @@ import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import examples from './requireExamples'
 import { spec, match, container } from 'ultra'
-import Ultra from '../src/index'
+import { A, Ultra } from '../src/index'
 require('./sakura.css')
 
 let _ultra, root = document.getElementById('root')
 
-let TocLinks = (props, {A}) => examples.map(([pathKey]) =>
+let TocLinks = (props) => examples.map(([pathKey]) =>
   <li key={pathKey}>
     <A href={'/' + pathKey}>
       {pathKey}
     </A>
   </li>
 )
-TocLinks.contextTypes = { A: PropTypes.func }
 
 let renderRoot = (app, msg) => render(
   <Ultra ultra={_ultra}>
