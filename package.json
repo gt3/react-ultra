@@ -23,12 +23,12 @@
     "react": "^16.0.0-alpha.13",
     "react-dom": "^16.0.0-alpha.13",
     "style-loader": "^0.18.2",
-    "ultra": "^0.6.9",
+    "ultra": "^0.7.0",
     "webpack": "^3.0.0",
     "webpack-dev-server": "^2.5.0"
   },
   "peerDependencies": {
-    "ultra": "^0.6.9",
+    "ultra": "^0.7.0",
     "react": "^15.0.0-0 || ^16.0.0-0"
   },
   "files": [

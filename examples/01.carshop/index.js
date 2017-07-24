@@ -1,9 +1,8 @@
 import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
-import { spec, check, match, prefixMatch, toggle, appendPath, parseQS } from 'ultra'
-
-let emptyMatch = match({})
+import { spec, check, match, prefixMatch, appendPath, parseQS } from 'ultra'
+import { A } from '../../src'
 
 function pipe(...fns) {
   function invoke(v) {
@@ -27,17 +26,20 @@ let createMatch = (select, staticPathKey) => {
 }
 
 class App extends Component {
-  constructor(props) {
-    super(props)
+  constructor(props, ctx) {
+    super(props, ctx)
+    App.pathKey = props.pathKey
     this.state = {}
   }
   componentDidMount() {
     let matchers = createMatch(this.setState.bind(this), App.pathKey)
-    App.replaceMatchers(App.pathKey, matchers)
+    this.remove = this.context.run(curr => [...matchers, ...curr], this.props.runUltra)
+    //App.replaceMatchers(App.pathKey, matchers)
   }
   componentWillUnmount() {
-    let placeholder = toggle(emptyMatch, App.pathKey)
-    App.replaceMatchers(App.pathKey, [placeholder, placeholder])
+    this.remove()
+    //let placeholder = toggle(emptyMatch, App.pathKey)
+    //App.replaceMatchers(App.pathKey, [placeholder, placeholder])
   }
   render() {
     let values = this.state
@@ -59,6 +61,7 @@ class App extends Component {
     )
   }
 }
+App.contextTypes = { run: PropTypes.func }
 
 let SelectCurrency = ({ curr }) => {
   let encoded = [encodeURIComponent('$'), encodeURIComponent('€')]
@@ -69,19 +72,19 @@ let SelectCurrency = ({ curr }) => {
   return (
     <ul key="currency" style={{ float: 'right' }} className="flat">
       <li>
-        <App.a href={hrefUSD} retain="" style={style('$')}>
+        <A href={hrefUSD} retain="" style={style('$')}>
           usd
-        </App.a>
+        </A>
       </li>
       <li>
-        <App.a href={hrefEUR} retain="" style={style('€')}>
+        <A href={hrefEUR} retain="" style={style('€')}>
           eur
-        </App.a>
+        </A>
       </li>
       <li>
-        <App.a href={hrefBoth} retain="">
+        <A href={hrefBoth} retain="">
           both
-        </App.a>
+        </A>
       </li>
     </ul>
   )
@@ -105,9 +108,9 @@ let Items = ({ data, selected, hrefPrefix = '' }) => {
   let style = key => (selected === key ? { border: 'solid' } : null)
   return Object.keys(data).map(val =>
     <li key={val}>
-      <App.a href={`${hrefPrefix}/${val}`} style={style(val)} retain="qs">
+      <A href={`${hrefPrefix}/${val}`} style={style(val)} retain="qs">
         {typeof data[val] === 'string' ? data[val] : val}
-      </App.a>
+      </A>
     </li>
   )
 }
@@ -161,21 +164,12 @@ let Model = ({ year, make, vid }) => {
   )
 }
 
-export default (node, pathKey, services) => {
-  Object.assign(App, services, { pathKey })
-  let placeholder = toggle(emptyMatch, pathKey)
-  services.runUltra(curr => [...curr, placeholder, placeholder])
-  return (msg, cb) =>
-    render(
-      <div>
-        <hr />
-        <div dangerouslySetInnerHTML={{ __html: readme }} />
-        <App />
-      </div>,
-      node,
-      cb
-    )
-}
+export default (pathKey, msg) =>
+  <div>
+    <hr />
+    <div dangerouslySetInnerHTML={{ __html: readme }} />
+    <App pathKey={pathKey} runUltra={msg && msg.path !== pathKey} />
+  </div>
 
 let _data = {
   2017: {

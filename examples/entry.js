@@ -1,46 +1,35 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import examples from './requireExamples'
-import { a, spec, match, prefixMatch, toggleSelected, container } from 'ultra'
+import { spec, match, container } from 'ultra'
+import { A, Ultra } from '../src/index'
 require('./sakura.css')
 
-let _ultra,
-  getUltra = () => _ultra,
-  A = props => <a.link {...props} />
-A.defaultProps = { createElement: React.createElement, getUltra }
+let _ultra, root = document.getElementById('root')
 
-let runUltra = (getMatchers, dispatchCurrent = false) =>
-  (_ultra = container(getMatchers(_ultra ? _ultra.matchers : []), null, _ultra, dispatchCurrent))
-
-let replaceMatchers = (key, replacements) => {
-  runUltra(curr => toggleSelected(curr, key, replacements))
-}
-let services = { getUltra, runUltra, replaceMatchers, a: A }
-
-let insertDiv = () => {
-  let appDiv = document.createElement('div')
-  return document.body.insertBefore(appDiv, null)
-}
-let tocDiv = insertDiv()
-let toc = examples.map(([pathKey]) =>
+let TocLinks = (props) => examples.map(([pathKey]) =>
   <li key={pathKey}>
     <A href={'/' + pathKey}>
       {pathKey}
     </A>
   </li>
 )
-let TOC = () =>
-  <ul>
-    {toc}
-  </ul>
-let renderTOC = () => render(<TOC />, tocDiv)
 
-let exampleDiv = insertDiv()
+let renderRoot = (app, msg) => render(
+  <Ultra ultra={_ultra}>
+    <div>
+      <ul><TocLinks /></ul>
+      <div>{app && app(msg)}</div>
+    </div>
+  </Ultra>
+, root)
+
 let exampleSpecs = examples.map(([pathKey, app]) => {
   pathKey = `/${pathKey}`
-  let renderApp = app(exampleDiv, pathKey, services)
-  return spec(pathKey)(renderApp, msg => renderApp(msg, () => _ultra.replace(msg.path)))
+  let render = renderRoot.bind(null, app.bind(null, pathKey))
+  return spec(pathKey)(render) //, msg => render(msg, () => msg.ultra.replace(msg.path)))
 })
-exampleSpecs.push(spec('/')(renderTOC))
+exampleSpecs.push(spec('/')(renderRoot.bind(null, null)))
 
-runUltra(curr => [...curr, match(exampleSpecs)], true)
+_ultra = container(match(exampleSpecs), null, null, true)
