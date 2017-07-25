@@ -6,7 +6,7 @@ import { spec, match, container } from 'ultra'
 import { A, Ultra, Use } from '../src/index'
 require('./sakura.css')
 
-let renderRoot, root = document.getElementById('root')
+let examplesMatch, rootMatch, root = document.getElementById('root')
 
 let TocLinks = (props) => examples.map(([mountPath]) =>
   <li key={mountPath}>
@@ -16,25 +16,22 @@ let TocLinks = (props) => examples.map(([mountPath]) =>
   </li>
 )
 
-let examplesMatch = () => {
-  let exampleSpecs = examples.map(([mountPath, app]) => {
-    mountPath = `/${mountPath}`
-    let render = renderRoot.bind(null, app.bind(null, mountPath))
-    return spec(mountPath)(render) //, msg => render(msg, () => msg.ultra.replace(msg.path)))
-  })
-  return match(exampleSpecs)
-}
-
-let rootMatch = () => match(spec('/')(msg => renderRoot(null, msg)))
-
-renderRoot = (app, msg) => render(
-  <Ultra matchers={rootMatch()} dispatch={false} >
+let renderRoot = (app, msg) => render(
+  <Ultra matchers={rootMatch} dispatch={false} >
     <div>
-      <Use matchers={examplesMatch()} />
+      <Use matchers={examplesMatch} />
       <ul><TocLinks /></ul>
       <div>{app && app(msg)}</div>
     </div>
   </Ultra>
 , root)
 
-_ultra = container(match(exampleSpecs), null, null, true)
+rootMatch = match(spec('/')(msg => renderRoot(null, msg)))
+
+examplesMatch = [match(examples.map(([mountPath, app]) => {
+  mountPath = `/${mountPath}`
+  app = app.bind(null, mountPath)
+  return spec(mountPath)(renderRoot.bind(null, app)) //, msg => render(msg, () => msg.ultra.replace(msg.path)))
+}))]
+
+renderRoot()

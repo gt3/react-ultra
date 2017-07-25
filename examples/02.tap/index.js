@@ -56,22 +56,7 @@ class App extends Component {
   }
 }
 App.contextTypes = { getUltra: PropTypes.func }
-// export default (node, mountPath, services) => {
-//   Object.assign(App, services, { mountPath })
-//   let placeholder = toggle(emptyMatch, mountPath)
-//   services.runUltra(curr => [...curr, placeholder])
-//   //return (msg, cb) => render(<App />, node, cb)
-//   return (msg, cb) =>
-//     render(
-//       <div>
-//         <hr />
-//         <div dangerouslySetInnerHTML={{ __html: readme }} />
-//         <App />
-//       </div>,
-//       node,
-//       cb
-//     )
-// }
+
 export default (mountPath, msg) =>
   <div>
     <hr />

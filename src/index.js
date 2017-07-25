@@ -10,12 +10,7 @@ const _id = x => x
 const exclude = (ex, source) => source === ex ? [] : source.filter(s => ex.indexOf(s) === -1)
 
 class Ultra extends Component {
-  constructor(props, ctx) {
-    super(props, ctx)
-    this.ultra = props.ultra
-    this.run = this.run.bind(this)
-  }
-  run(getMatchers, getMismatchers = _id, dispatch = false) {
+  clone(getMatchers, getMismatchers = _id, dispatch) {
     let {matchers = [], mismatchers = []} = this.ultra || {}
     let newMatchers = getMatchers(matchers)
     let newMismatchers = getMismatchers(mismatchers)
@@ -23,25 +18,31 @@ class Ultra extends Component {
     return this.remove.bind(this, exclude(matchers, newMatchers), exclude(mismatchers, newMismatchers))
   }
   remove(matchers, mismatchers) {
-    this.run(exclude.bind(null, matchers), exclude.bind(null, mismatchers), false)
+    this.clone(exclude.bind(null, matchers), exclude.bind(null, mismatchers), false)
   }
   componentWillMount() {
-    this.props.init(this.run)
+    let {matchers, mismatchers, dispatch} = this.props
+    this.ultra = container(matchers, mismatchers, null, dispatch)
+  }
+  componentWillUnmount() {
+    if(this.ultra) this.ultra.stop()
   }
   getChildContext() {
-    return { getUltra: () => this.ultra, run: this.run }
+    return { getUltra: () => this.ultra, clone: this.clone.bind(this) }
   }
   render() {
     return Children.only(this.props.children)
   }
 }
 Ultra.propTypes = {
-  init: PropTypes.func.isRequired,
-  children: PropTypes.element.isRequired
+  children: PropTypes.element.isRequired,
+  matchers: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
+  mismatchers: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  dispatch: PropTypes.bool
 }
 Ultra.childContextTypes = {
   getUltra: PropTypes.func,
-  run: PropTypes.func
+  clone: PropTypes.func
 }
 
 class Use extends Component {
@@ -49,7 +50,7 @@ class Use extends Component {
     let add = this.props.append
       ? curr => [...curr, ...this.props.matchers]
       : curr => [...this.props.matchers, ...curr]
-    this.remove = this.context.run(add, this.props.dispatch)
+    this.remove = this.context.clone(add, undefined, this.props.dispatch)
   }
   componentWillUnmount() {
     this.remove()
@@ -60,9 +61,10 @@ class Use extends Component {
 }
 Use.propTypes = {
   matchers: PropTypes.array.isRequired,
+  //mismatchers: PropTypes.array,
   dispatch: PropTypes.bool,
   append: PropTypes.bool
 }
-Use.contextTypes = { run: PropTypes.func }
+Use.contextTypes = { clone: PropTypes.func }
 
 export { Ultra, Use, A }
