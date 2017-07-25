@@ -28,10 +28,10 @@ let renderRoot = (app, msg) => render(
 
 rootMatch = match(spec('/')(msg => renderRoot(null, msg)))
 
-examplesMatch = [match(examples.map(([mountPath, app]) => {
+examplesMatch = match(examples.map(([mountPath, app]) => {
   mountPath = `/${mountPath}`
   app = app.bind(null, mountPath)
   return spec(mountPath)(renderRoot.bind(null, app)) //, msg => render(msg, () => msg.ultra.replace(msg.path)))
-}))]
+}))
 
 renderRoot()

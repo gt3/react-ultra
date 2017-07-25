@@ -47,10 +47,11 @@ Ultra.childContextTypes = {
 
 class Use extends Component {
   componentWillMount() {
-    let add = this.props.append
-      ? curr => [...curr, ...this.props.matchers]
-      : curr => [...this.props.matchers, ...curr]
-    this.remove = this.context.clone(add, undefined, this.props.dispatch)
+    let matchers = [].concat(this.props.matchers)
+    let mismatchers = [].concat(this.props.mismatchers || [])
+    let addMatchers = curr => this.props.append ? [...curr, ...matchers] : [...matchers, ...curr]
+    let addMismatchers = curr => [...curr, ...mismatchers]
+    this.remove = this.context.clone(addMatchers, addMismatchers, this.props.dispatch)
   }
   componentWillUnmount() {
     this.remove()
@@ -60,8 +61,8 @@ class Use extends Component {
   }
 }
 Use.propTypes = {
-  matchers: PropTypes.array.isRequired,
-  //mismatchers: PropTypes.array,
+  matchers: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
+  mismatchers: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   dispatch: PropTypes.bool,
   append: PropTypes.bool
 }
