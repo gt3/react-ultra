@@ -11,26 +11,27 @@ function pipe(...fns) {
   return invoke
 }
 
-let createMatch = (select, staticPathKey) => {
+let createMatch = (select, mountPath) => {
   let transform = ({ values: [x] }) => ({ x })
-  return [prefixMatch(staticPathKey, match(spec('/:x')(pipe(transform, select))))]
+  return [prefixMatch(mountPath, match(spec('/:x')(pipe(transform, select))))]
 }
 
 class App extends Component {
   constructor(props, ctx) {
     super(props, ctx)
-    App.pathKey = props.pathKey
+    App.mountPath = props.mountPath
     this.state = { x: 1, tap: false }
     this.navigate = this.navigate.bind(this)
   }
+  get ultra() { return this.context.getUltra() }
   get nextLink() {
-    return `${App.pathKey}/${+this.state.x + 1}`
+    return `${App.mountPath}/${+this.state.x + 1}`
   }
   navigate() {
-    return this.context.getUltra().push(this.nextLink)
+    return this.ultra.push(this.nextLink)
   }
   componentDidMount() {
-    let matchers = createMatch(this.setState.bind(this), App.pathKey)
+    let matchers = createMatch(this.setState.bind(this), App.mountPath)
     this.remove = this.context.run(curr => [...matchers, ...curr], this.props.runUltra)
     this.interval = setInterval(this.navigate, 3000)
   }
@@ -42,10 +43,10 @@ class App extends Component {
     return window.confirm('Are you sure you want to navigate away?') ? ok() : cancel()
   }
   render() {
-    let { x, tap } = this.state, { getUltra } = this.context
+    let { x, tap } = this.state
     let toggleTap = cb => () => this.setState(state => ({ tap: !state.tap }), cb)
-    if (tap) getUltra().tap((ok, cancel) => this.confirm(toggleTap(ok), cancel))
-    else getUltra().untap()
+    if (tap) this.ultra.tap((ok, cancel) => this.confirm(toggleTap(ok), cancel))
+    else this.ultra.untap()
     return (
       <button onClick={toggleTap()}>
         {tap ? 'release' : 'tap'}: {x}
@@ -54,9 +55,9 @@ class App extends Component {
   }
 }
 App.contextTypes = { getUltra: PropTypes.func, run: PropTypes.func }
-// export default (node, pathKey, services) => {
-//   Object.assign(App, services, { pathKey })
-//   let placeholder = toggle(emptyMatch, pathKey)
+// export default (node, mountPath, services) => {
+//   Object.assign(App, services, { mountPath })
+//   let placeholder = toggle(emptyMatch, mountPath)
 //   services.runUltra(curr => [...curr, placeholder])
 //   //return (msg, cb) => render(<App />, node, cb)
 //   return (msg, cb) =>
@@ -70,11 +71,11 @@ App.contextTypes = { getUltra: PropTypes.func, run: PropTypes.func }
 //       cb
 //     )
 // }
-export default (pathKey, msg) =>
+export default (mountPath, msg) =>
   <div>
     <hr />
     <div dangerouslySetInnerHTML={{ __html: readme }} />
-    <App pathKey={pathKey} runUltra={msg && msg.path !== pathKey} />
+    <App mountPath={mountPath} runUltra={msg && msg.path !== mountPath} />
   </div>
 
 var readme = require('./README.md')

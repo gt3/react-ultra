@@ -8,10 +8,10 @@ require('./sakura.css')
 
 let _ultra, root = document.getElementById('root')
 
-let TocLinks = (props) => examples.map(([pathKey]) =>
-  <li key={pathKey}>
-    <A href={'/' + pathKey}>
-      {pathKey}
+let TocLinks = (props) => examples.map(([mountPath]) =>
+  <li key={mountPath}>
+    <A href={'/' + mountPath}>
+      {mountPath}
     </A>
   </li>
 )
@@ -25,10 +25,10 @@ let renderRoot = (app, msg) => render(
   </Ultra>
 , root)
 
-let exampleSpecs = examples.map(([pathKey, app]) => {
-  pathKey = `/${pathKey}`
-  let render = renderRoot.bind(null, app.bind(null, pathKey))
-  return spec(pathKey)(render) //, msg => render(msg, () => msg.ultra.replace(msg.path)))
+let exampleSpecs = examples.map(([mountPath, app]) => {
+  mountPath = `/${mountPath}`
+  let render = renderRoot.bind(null, app.bind(null, mountPath))
+  return spec(mountPath)(render) //, msg => render(msg, () => msg.ultra.replace(msg.path)))
 })
 exampleSpecs.push(spec('/')(renderRoot.bind(null, null)))
 

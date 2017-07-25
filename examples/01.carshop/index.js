@@ -11,7 +11,7 @@ function pipe(...fns) {
   return invoke
 }
 
-let createMatch = (select, staticPathKey) => {
+let createMatch = (select, mountPath) => {
   let transform = ({ values: [year, make, vid], prefix, pValues }) =>
     Object.assign({ year, make, vid }, pValues.length && { curr: pValues[0].split(',') })
   let specSelect = spec('/:year', '/:year/:make', '/:year/:make/:vid')(pipe(transform, select))
@@ -20,26 +20,26 @@ let createMatch = (select, staticPathKey) => {
   let addCurrency = ({ qs, path }) => appendPath(parseQS(qs, ['curr']), path)
   let allChecks = Object.assign({}, yearCheck, currCheck)
   return [
-    prefixMatch(staticPathKey, prefixMatch(':curr', match(specSelect, allChecks), addCurrency)),
-    prefixMatch(staticPathKey, match(specSelect, yearCheck))
+    prefixMatch(mountPath, prefixMatch(':curr', match(specSelect, allChecks), addCurrency)),
+    prefixMatch(mountPath, match(specSelect, yearCheck))
   ]
 }
 
 class App extends Component {
   constructor(props, ctx) {
     super(props, ctx)
-    App.pathKey = props.pathKey
+    App.mountPath = props.mountPath
     this.state = {}
   }
   componentDidMount() {
-    let matchers = createMatch(this.setState.bind(this), App.pathKey)
+    let matchers = createMatch(this.setState.bind(this), App.mountPath)
     this.remove = this.context.run(curr => [...matchers, ...curr], this.props.runUltra)
-    //App.replaceMatchers(App.pathKey, matchers)
+    //App.replaceMatchers(App.mountPath, matchers)
   }
   componentWillUnmount() {
     this.remove()
-    //let placeholder = toggle(emptyMatch, App.pathKey)
-    //App.replaceMatchers(App.pathKey, [placeholder, placeholder])
+    //let placeholder = toggle(emptyMatch, App.mountPath)
+    //App.replaceMatchers(App.mountPath, [placeholder, placeholder])
   }
   render() {
     let values = this.state
@@ -121,7 +121,7 @@ let Nav = ({ vid }) => {
       Items({
         data: _data[year][make],
         selected: vid,
-        hrefPrefix: `${App.pathKey}/${year}/${make}`
+        hrefPrefix: `${App.mountPath}/${year}/${make}`
       })
     )
   )
@@ -135,7 +135,7 @@ let Nav = ({ vid }) => {
 let SelectVehicle = ({ year, make, vid }) => {
   return (
     <ul key="vehicle">
-      {Items({ data: _data, selected: year, hrefPrefix: `${App.pathKey}` })}
+      {Items({ data: _data, selected: year, hrefPrefix: `${App.mountPath}` })}
       {year
         ? <ul key="make">
             <MakeModel year={year} make={make} vid={vid} />
@@ -149,7 +149,7 @@ let MakeModel = ({ year, make, vid }) => {
   let makes = _data[year]
   return (
     <ul key="make">
-      {Items({ data: makes, selected: make, hrefPrefix: `${App.pathKey}/${year}` })}
+      {Items({ data: makes, selected: make, hrefPrefix: `${App.mountPath}/${year}` })}
       {make ? <Model year={year} make={make} vid={vid} /> : null}
     </ul>
   )
@@ -159,16 +159,16 @@ let Model = ({ year, make, vid }) => {
   let models = _data[year][make]
   return (
     <ul key="model">
-      {Items({ data: models, selected: vid, hrefPrefix: `${App.pathKey}/${year}/${make}` })}
+      {Items({ data: models, selected: vid, hrefPrefix: `${App.mountPath}/${year}/${make}` })}
     </ul>
   )
 }
 
-export default (pathKey, msg) =>
+export default (mountPath, msg) =>
   <div>
     <hr />
     <div dangerouslySetInnerHTML={{ __html: readme }} />
-    <App pathKey={pathKey} runUltra={msg && msg.path !== pathKey} />
+    <App mountPath={mountPath} runUltra={msg && msg.path !== mountPath} />
   </div>
 
 let _data = {
