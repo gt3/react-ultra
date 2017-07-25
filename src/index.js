@@ -15,7 +15,7 @@ class Ultra extends Component {
     this.ultra = props.ultra
     this.run = this.run.bind(this)
   }
-  run(getMatchers, dispatch = false, getMismatchers = _id) {
+  run(getMatchers, getMismatchers = _id, dispatch = false) {
     let {matchers = [], mismatchers = []} = this.ultra || {}
     let newMatchers = getMatchers(matchers)
     let newMismatchers = getMismatchers(mismatchers)
@@ -23,7 +23,10 @@ class Ultra extends Component {
     return this.remove.bind(this, exclude(matchers, newMatchers), exclude(mismatchers, newMismatchers))
   }
   remove(matchers, mismatchers) {
-    this.run(exclude.bind(null, matchers), false, exclude.bind(null, mismatchers))
+    this.run(exclude.bind(null, matchers), exclude.bind(null, mismatchers), false)
+  }
+  componentWillMount() {
+    this.props.init(this.run)
   }
   getChildContext() {
     return { getUltra: () => this.ultra, run: this.run }
@@ -33,7 +36,7 @@ class Ultra extends Component {
   }
 }
 Ultra.propTypes = {
-  ultra: PropTypes.object.isRequired,
+  init: PropTypes.func.isRequired,
   children: PropTypes.element.isRequired
 }
 Ultra.childContextTypes = {
@@ -41,12 +44,12 @@ Ultra.childContextTypes = {
   run: PropTypes.func
 }
 
-class Load extends Component {
+class Use extends Component {
   componentWillMount() {
-    let load = this.props.append
+    let add = this.props.append
       ? curr => [...curr, ...this.props.matchers]
       : curr => [...this.props.matchers, ...curr]
-    this.remove = this.context.run(load, this.props.dispatch)
+    this.remove = this.context.run(add, this.props.dispatch)
   }
   componentWillUnmount() {
     this.remove()
@@ -55,11 +58,11 @@ class Load extends Component {
     return null
   }
 }
-Load.propTypes = {
+Use.propTypes = {
   matchers: PropTypes.array.isRequired,
   dispatch: PropTypes.bool,
   append: PropTypes.bool
 }
-Load.contextTypes = { run: PropTypes.func }
+Use.contextTypes = { run: PropTypes.func }
 
-export { Ultra, A, Load }
+export { Ultra, Use, A }

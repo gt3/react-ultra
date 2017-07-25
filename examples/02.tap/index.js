@@ -2,7 +2,7 @@ import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import { spec, check, match, prefixMatch, appendPath, parseQS } from 'ultra'
-import { A, Load } from '../../src'
+import { A, Use } from '../../src'
 
 function pipe(...fns) {
   function invoke(v) {
@@ -47,7 +47,7 @@ class App extends Component {
     else this.ultra.untap()
     return (
       <div>
-        <Load matchers={this.matchers} dispatch={this.props.dispatch} />
+        <Use matchers={this.matchers} dispatch={this.props.dispatch} />
         <button onClick={toggleTap()}>
           {tap ? 'release' : 'tap'}: {x}
         </button>
