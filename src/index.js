@@ -7,25 +7,29 @@ A.defaultProps = { createElement }
 A.contextTypes = { getUltra: PropTypes.func }
 
 const _id = x => x
-const exclude = (ex, source) => source === ex ? [] : source.filter(s => ex.indexOf(s) === -1)
+const exclude = (ex, source) => (source === ex ? [] : source.filter(s => ex.indexOf(s) === -1))
 
 class Ultra extends Component {
   clone(getMatchers, getMismatchers = _id, dispatch) {
-    let {matchers = [], mismatchers = []} = this.ultra || {}
+    let { matchers = [], mismatchers = [] } = this.ultra || {}
     let newMatchers = getMatchers(matchers)
     let newMismatchers = getMismatchers(mismatchers)
     this.ultra = container(newMatchers, newMismatchers, this.ultra, dispatch)
-    return this.remove.bind(this, exclude(matchers, newMatchers), exclude(mismatchers, newMismatchers))
+    return this.remove.bind(
+      this,
+      exclude(matchers, newMatchers),
+      exclude(mismatchers, newMismatchers)
+    )
   }
   remove(matchers, mismatchers) {
     this.clone(exclude.bind(null, matchers), exclude.bind(null, mismatchers), false)
   }
   componentWillMount() {
-    let {matchers, mismatchers, dispatch} = this.props
+    let { matchers, mismatchers, dispatch } = this.props
     this.ultra = container(matchers, mismatchers, null, dispatch)
   }
   componentWillUnmount() {
-    if(this.ultra) this.ultra.stop()
+    if (this.ultra) this.ultra.stop()
   }
   getChildContext() {
     return { getUltra: () => this.ultra, clone: this.clone.bind(this) }
@@ -49,7 +53,7 @@ class Use extends Component {
   componentWillMount() {
     let matchers = [].concat(this.props.matchers)
     let mismatchers = [].concat(this.props.mismatchers || [])
-    let addMatchers = curr => this.props.append ? [...curr, ...matchers] : [...matchers, ...curr]
+    let addMatchers = curr => (this.props.append ? [...curr, ...matchers] : [...matchers, ...curr])
     let addMismatchers = curr => [...curr, ...mismatchers]
     this.remove = this.context.clone(addMatchers, addMismatchers, this.props.dispatch)
   }

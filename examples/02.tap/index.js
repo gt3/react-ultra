@@ -24,14 +24,16 @@ class App extends Component {
     this.navigate = this.navigate.bind(this)
     this.matchers = createMatch(this.setState.bind(this), App.mountPath)
   }
-  get ultra() { return this.context.getUltra() }
+  get ultra() {
+    return this.context.getUltra()
+  }
   get nextLink() {
     return `${App.mountPath}/${+this.state.x + 1}`
   }
   navigate() {
     return this.ultra.push(this.nextLink)
   }
-  componentWillMount() {    
+  componentWillMount() {
     this.interval = setInterval(this.navigate, 3000)
   }
   componentWillUnmount() {
