@@ -1,6 +1,6 @@
 {
   "name": "react-ultra",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "React bindings for Ultra router",
   "main": "./lib/react-ultra.js",
   "module": "./lib/react-ultra.es.js",
