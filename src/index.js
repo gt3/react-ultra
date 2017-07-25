@@ -41,4 +41,25 @@ Ultra.childContextTypes = {
   run: PropTypes.func
 }
 
-export { Ultra, A }
+class Load extends Component {
+  componentWillMount() {
+    let load = this.props.append
+      ? curr => [...curr, ...this.props.matchers]
+      : curr => [...this.props.matchers, ...curr]
+    this.remove = this.context.run(load, this.props.dispatch)
+  }
+  componentWillUnmount() {
+    this.remove()
+  }
+  render() {
+    return null
+  }
+}
+Load.propTypes = {
+  matchers: PropTypes.array.isRequired,
+  dispatch: PropTypes.bool,
+  append: PropTypes.bool
+}
+Load.contextTypes = { run: PropTypes.func }
+
+export { Ultra, A, Load }

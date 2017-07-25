@@ -2,7 +2,7 @@ import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import { spec, check, match, prefixMatch, appendPath, parseQS } from 'ultra'
-import { A } from '../../src'
+import { A, Load } from '../../src'
 
 function pipe(...fns) {
   function invoke(v) {
@@ -28,23 +28,15 @@ let createMatch = (select, mountPath) => {
 class App extends Component {
   constructor(props, ctx) {
     super(props, ctx)
-    App.mountPath = props.mountPath
     this.state = {}
-  }
-  componentDidMount() {
-    let matchers = createMatch(this.setState.bind(this), App.mountPath)
-    this.remove = this.context.run(curr => [...matchers, ...curr], this.props.runUltra)
-    //App.replaceMatchers(App.mountPath, matchers)
-  }
-  componentWillUnmount() {
-    this.remove()
-    //let placeholder = toggle(emptyMatch, App.mountPath)
-    //App.replaceMatchers(App.mountPath, [placeholder, placeholder])
+    App.mountPath = props.mountPath
+    this.matchers = createMatch(this.setState.bind(this), App.mountPath)
   }
   render() {
     let values = this.state
     return (
       <div>
+        <Load matchers={this.matchers} dispatch={this.props.dispatch} />
         <header>
           <SelectCurrency {...values} />
         </header>
@@ -61,7 +53,6 @@ class App extends Component {
     )
   }
 }
-App.contextTypes = { run: PropTypes.func }
 
 let SelectCurrency = ({ curr }) => {
   let encoded = [encodeURIComponent('$'), encodeURIComponent('€')]
@@ -168,7 +159,7 @@ export default (mountPath, msg) =>
   <div>
     <hr />
     <div dangerouslySetInnerHTML={{ __html: readme }} />
-    <App mountPath={mountPath} runUltra={msg && msg.path !== mountPath} />
+    <App mountPath={mountPath} dispatch={msg && msg.path !== mountPath} />
   </div>
 
 let _data = {

@@ -2,7 +2,7 @@ import React, { Component, createElement } from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import { spec, check, match, prefixMatch, appendPath, parseQS } from 'ultra'
-import { A } from '../../src'
+import { A, Load } from '../../src'
 
 function pipe(...fns) {
   function invoke(v) {
@@ -22,6 +22,7 @@ class App extends Component {
     App.mountPath = props.mountPath
     this.state = { x: 1, tap: false }
     this.navigate = this.navigate.bind(this)
+    this.matchers = createMatch(this.setState.bind(this), App.mountPath)
   }
   get ultra() { return this.context.getUltra() }
   get nextLink() {
@@ -30,14 +31,11 @@ class App extends Component {
   navigate() {
     return this.ultra.push(this.nextLink)
   }
-  componentDidMount() {
-    let matchers = createMatch(this.setState.bind(this), App.mountPath)
-    this.remove = this.context.run(curr => [...matchers, ...curr], this.props.runUltra)
+  componentWillMount() {    
     this.interval = setInterval(this.navigate, 3000)
   }
   componentWillUnmount() {
     clearInterval(this.interval)
-    this.remove()
   }
   confirm(ok, cancel) {
     return window.confirm('Are you sure you want to navigate away?') ? ok() : cancel()
@@ -48,13 +46,16 @@ class App extends Component {
     if (tap) this.ultra.tap((ok, cancel) => this.confirm(toggleTap(ok), cancel))
     else this.ultra.untap()
     return (
-      <button onClick={toggleTap()}>
-        {tap ? 'release' : 'tap'}: {x}
-      </button>
+      <div>
+        <Load matchers={this.matchers} dispatch={this.props.dispatch} />
+        <button onClick={toggleTap()}>
+          {tap ? 'release' : 'tap'}: {x}
+        </button>
+      </div>
     )
   }
 }
-App.contextTypes = { getUltra: PropTypes.func, run: PropTypes.func }
+App.contextTypes = { getUltra: PropTypes.func }
 // export default (node, mountPath, services) => {
 //   Object.assign(App, services, { mountPath })
 //   let placeholder = toggle(emptyMatch, mountPath)
@@ -75,7 +76,7 @@ export default (mountPath, msg) =>
   <div>
     <hr />
     <div dangerouslySetInnerHTML={{ __html: readme }} />
-    <App mountPath={mountPath} runUltra={msg && msg.path !== mountPath} />
+    <App mountPath={mountPath} dispatch={msg && msg.path !== mountPath} />
   </div>
 
 var readme = require('./README.md')
