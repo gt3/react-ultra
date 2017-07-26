@@ -29,7 +29,7 @@ Nav = () =>
     <A href='/news/politics'>politics</A>
   </div>
 
-App = ({path}) => 
+App = ({path} = {}) => 
   <Ultra matchers={rootMatch} dispatch={false}>
     <Nav />
     {path && path.indexOf('/news') === 0 && <News />}
