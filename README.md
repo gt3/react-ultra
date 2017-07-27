@@ -1,15 +1,10 @@
 ## `npm i react-ultra`
 
-Ancillary components to use [Ultra](https://github.com/gt3/ultra-router) in your React app.
+Provides (*tiny = `900b`*) ancillary components to use [Ultra](https://github.com/gt3/ultra-router) in React apps.
 
-Includes 3 components (*tiny = `900b`*):
-
-1. `<Ultra />`
-  - Creates Ultra container and provides it to children via context.
-2. `<Use />`
-  - Dynamically adds and removes route configuration (matchers) as the component mounts and unmounts.
-3. `<A />`
-  - Creates an anchor link to trigger pushstate routing.
+1. `<Ultra />` - creates Ultra container and provides it to children via context.
+2. `<Use />` - dynamically adds and removes route configuration (matchers) as the component mounts and unmounts.
+3. `<A />` - creates an anchor link element to trigger pushstate.
 
 ## Usage
 
@@ -19,6 +14,7 @@ Quick example to demonstrate code splitting (webpack dynamic import) with `react
 // app.js
 import { Ultra, A } from 'react-ultra'
 import { spec, match } from 'ultra'
+
 let dynamicImport = () => import(/* webpackChunkName: "news" */ './news')
 
 let News, Nav, App, renderApp, rootMatch
@@ -55,7 +51,7 @@ renderApp()
 ```
 `app.js` is our entry point where we render the `<App />` component with `<Nav />` links on the page. We use `<Ultra />` to initialize the router container with root level matches. We use `<A />` to create anchor links to navigate to the news section.
 
-Note that news module is loaded dynamically using webpack import. The `<News />` component mounts once the module is loaded.
+News module is loaded dynamically using webpack import on `/news` path hit. The `<News />` component mounts once the module is loaded.
 
 ```
 // news.js
@@ -79,7 +75,7 @@ export default News
 
 The `<News />` component *prepends* its matchers to the router by rendering `<Use />`. It adds the news section matchers on mount and removes on unmount.
 
-There are more full-proof examples that you can run locally. Check out the examples directory.
+For more full-proof examples, check out the examples directory.
 
 ### License
 
