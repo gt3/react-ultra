@@ -1,10 +1,12 @@
 ## `npm i react-ultra`
 
-Provides (*tiny = `900b`*) ancillary components to use [Ultra](https://github.com/gt3/ultra-router) in React apps.
+Provides ancillary components to use [Ultra](https://github.com/gt3/ultra-router) in React apps.
 
 1. `<Ultra />` - creates Ultra container and provides it to children via context.
 2. `<Use />` - dynamically adds and removes route configuration (matchers) as the component mounts and unmounts.
 3. `<A />` - creates an anchor link element to trigger pushstate.
+
+Download size: `900 bytes`
 
 ## Usage
 
