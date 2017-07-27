@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import examples from './requireExamples'
-import { spec, match, container } from 'ultra'
+import { spec, match } from 'ultra'
 import { A, Ultra, Use } from '../src/index'
 require('./sakura.css')
 

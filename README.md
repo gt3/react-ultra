@@ -13,49 +13,62 @@ Includes 3 components (*tiny = `900b`*):
 
 ## Usage
 
-Quick example to demonstrate app structure with `react-ultra` components.
+Quick example to demonstrate code splitting (webpack dynamic import) with `react-ultra` components.
 
 ```
 // app.js
 import { Ultra, A } from 'react-ultra'
-import News from './news'
+import { spec, match } from 'ultra'
+let dynamicImport = () => import(/* webpackChunkName: "news" */ './news')
 
-let Nav, App, renderApp, rootMatch
+let News, Nav, App, renderApp, rootMatch
 
-Nav = () => 
+Nav = () =>
   <div>
-    <A href='/news'>news home</A>
-    <A href='/news/sports'>sports</A>
-    <A href='/news/politics'>politics</A>
+    <A href="/news">news home</A>
+    <A href="/news/sports">sports</A>
+    <A href="/news/politics">politics</A>
   </div>
 
-App = ({path} = {}) => 
-  <Ultra matchers={rootMatch} dispatch={false}>
-    <Nav />
-    {path && path.indexOf('/news') === 0 && <News />}
-  </Ultra>
+App = ({ path } = {}) => {
+  let showNews = path && path.indexOf('/news') === 0
+  if (showNews && !News) {
+    dynamicImport().then(component => {
+      News = component
+      renderApp({ path })
+    })
+  }
+  return (
+    <Ultra matchers={rootMatch} dispatch={false}>
+      <Nav />
+      {showNews && News ? <News /> : null}
+    </Ultra>
+  )
+}
 
 renderApp = route => React.render(<App {...route} />, document.getElementById('root'))
 
-rootMatch = match([ spec('/news')(renderApp), spec('/')(renderApp) ])
+rootMatch = match([spec('/news')(renderApp), spec('/')(renderApp)])
 
 renderApp()
+
 ```
 `app.js` is our entry point where we render the `<App />` component with `<Nav />` links on the page. We use `<Ultra />` to initialize the router container with root level matches. We use `<A />` to create anchor links to navigate to the news section.
 
-Note that `<News />` component mounts only when a news link is clicked.
+Note that news module is loaded dynamically using webpack import. The `<News />` component mounts once the module is loaded.
 
 ```
 // news.js
 import { Use } from 'react-ultra'
+import { spec, match } from 'ultra'
 
 let next, newsMatch, News
 
 next = route => console.log('news section: ', route.path)
 
-newsMatch = match([ spec('/news/sports')(next), spec('/news/politics')(next) ])
+newsMatch = match([spec('/news/sports')(next), spec('/news/politics')(next)])
 
-News = () => 
+News = () =>
   <div>
     <h1>News Home</h1>
     <Use matchers={newsMatcher} dispatch={true} />
