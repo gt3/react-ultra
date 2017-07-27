@@ -6,7 +6,9 @@ Provides ancillary components to use [Ultra](https://github.com/gt3/ultra-router
 2. `<Use />` - dynamically adds and removes route configuration (matchers) as the component mounts and unmounts.
 3. `<A />` - creates an anchor link element to trigger pushstate.
 
-Download size: `900 bytes`
+| download | dependencies |
+| :----: | ---- |
+| `0.9 kb` | ultra, react, prop-types |
 
 ## Usage
 
