@@ -33,8 +33,8 @@ Nav = () =>
 App = ({ path } = {}) => {
   let showNews = path && path.indexOf('/news') === 0
   if (showNews && !News) {
-    dynamicImport().then(component => {
-      News = component
+    dynamicImport().then(module => {
+      News = module.default
       renderApp({ path })
     })
   }
