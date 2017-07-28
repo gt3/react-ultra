@@ -14,7 +14,7 @@ Provides ancillary components to use [Ultra](https://github.com/gt3/ultra-router
 
 Quick example to demonstrate code splitting (webpack dynamic import) with `react-ultra` components.
 
-```
+```javascript
 // app.js
 import { Ultra, A } from 'react-ultra'
 import { spec, match } from 'ultra'
@@ -52,7 +52,7 @@ rootMatch = match([spec('/news')(renderApp), spec('/')(renderApp)])
 
 renderApp()
 
-```
+```javascript
 `app.js` is our entry point where we render the `<App />` component with `<Nav />` links on the page. We use `<Ultra />` to initialize the router container with root level matches. We use `<A />` to create anchor links to navigate to the news section.
 
 News module is loaded dynamically using webpack import on `/news` path hit. The `<News />` component mounts once the module is loaded.
