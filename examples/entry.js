@@ -4,7 +4,6 @@ import { render } from 'react-dom'
 import examples from './requireExamples'
 import { spec, match } from 'ultra'
 import { A, Ultra, Use } from '../src/index'
-require('./sakura.css')
 
 let examplesMatch,
   rootMatch,
