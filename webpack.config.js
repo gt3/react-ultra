@@ -1,9 +1,13 @@
 var webpack = require('webpack')
 var path = require('path')
 var glob = require("glob")
+var eol = require('os').EOL
 
-const examplesLoc = './examples'
-var { examplesDir, examplesRegex } = getExamplesConfig(examplesLoc)
+let dir = process.argv.find(arg => /^examplesDir\=.+/.test(arg))
+if(dir) dir = dir.replace('examplesDir=', '')
+else throw new Error(`Missing argumnet: examplesDir ${eol}use: webpack-dev-server --define examplesDir=<path>${eol}use: npm start -- --define examplesDir=<path>`)
+
+var { examplesDir, examplesRegex } = getExamplesConfig(dir)
 
 module.exports = {
   devtool: "source-map",
@@ -25,7 +29,7 @@ module.exports = {
       __examplesDir: JSON.stringify(examplesDir),
       __examplesRegex: examplesRegex
     }),
-    new webpack.NormalModuleReplacementPlugin(new RegExp(`^${escapeRx(examplesLoc)}$`), function(resource) {
+    new webpack.NormalModuleReplacementPlugin(new RegExp(`^${escapeRx(dir)}$`), function(resource) {
       resource.context = __dirname
       resource.request = `./requireExamples`
     })
