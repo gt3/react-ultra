@@ -1,7 +1,9 @@
 var webpack = require('webpack')
 var path = require('path')
 var glob = require("glob")
-var { examplesDir, examplesRegex } = getExamplesConfig()
+
+const examplesLoc = './examples'
+var { examplesDir, examplesRegex } = getExamplesConfig(examplesLoc)
 
 module.exports = {
   devtool: "source-map",
@@ -22,23 +24,37 @@ module.exports = {
     new webpack.DefinePlugin({
       __examplesDir: JSON.stringify(examplesDir),
       __examplesRegex: examplesRegex
+    }),
+    new webpack.NormalModuleReplacementPlugin(new RegExp(`^${escapeRx(examplesLoc)}$`), function(resource) {
+      resource.context = __dirname
+      resource.request = `./requireExamples`
     })
   ],
+  externals: {
+    "prop-types": "PropTypes",
+    "react": "React",
+    "react-dom": "ReactDOM",
+    "ultra": "ultra"
+  },
   devServer: {
     //contentBase: path.join(__dirname, "examples"),
     historyApiFallback: true
   }
 };
 
-function getExamplesConfig() {
-  let examplesDir = path.join(__dirname, 'examples').replace(/\\/g,'/')
+function getExamplesConfig(loc) {
+  let examplesDir = path.join(__dirname, loc).replace(/\\/g,'/')
   let pjs = glob.sync(path.join(examplesDir, '/**/package.json'))
   let examples = []
-  let moduleFriendly = p => path.relative(examplesDir, require.resolve(p)).replace(/\\/g,'/')
+  let moduleFriendly = p => escapeRx(path.relative(examplesDir, require.resolve(p)).replace(/\\/g,'/'))
   pjs.forEach(pj => {
     let dir = pj.replace(/\/package\.json$/, '')
     examples.push(moduleFriendly(dir))
   })
   let pathsRegex = paths => new RegExp(paths.length ? paths.join('$|').concat('$') : '.^')
   return {examplesDir, examplesRegex: pathsRegex(examples)}
+}
+
+function escapeRx(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }

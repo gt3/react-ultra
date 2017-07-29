@@ -11,7 +11,7 @@
     "lint": "npm run format && eslint --ignore-path .gitignore \"{src,examples}/**/*.js\"",
     "build": "rollup -c && rollup -c --environment DIST",
     "prepublishOnly": "npm run lint && npm run build",
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server --info"
   },
   "repository": "gt3/react-ultra",
   "author": "Ankit Patel <gt3.someday@gmail.com>",
