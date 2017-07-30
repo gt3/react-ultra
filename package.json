@@ -11,7 +11,7 @@
     "lint": "npm run format && eslint --ignore-path .gitignore \"{src,examples}/**/*.js\"",
     "build": "rollup -c && rollup -c --environment DIST",
     "prepublishOnly": "npm run lint && npm run build",
-    "start": "webpack-dev-server --define examplesDir=./examples"
+    "start": "runnn examplesDir=./examples"
   },
   "repository": "gt3/react-ultra",
   "author": "Ankit Patel <gt3.someday@gmail.com>",
@@ -49,7 +49,7 @@
     "uglify-es": "^3.0.26",
     "ultra": "^0.7.0",
     "webpack": "^3.0.0",
-    "webpack-dev-server": "^2.5.0"
+    "webpack-dev-server": "^2.6.1"
   },
   "peerDependencies": {
     "ultra": "^0.7.0",
