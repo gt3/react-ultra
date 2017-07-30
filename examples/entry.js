@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { render } from 'react-dom'
 import examples from './examples' //'./requireExamples'
 import { spec, match } from 'ultra'
-import { A, Ultra, Use } from '../src/index'
+import { A, Ultra, Use } from 'react-ultra'
 
 let examplesMatch,
   rootMatch,

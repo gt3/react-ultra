@@ -11,7 +11,7 @@
     "lint": "npm run format && eslint --ignore-path .gitignore \"{src,examples}/**/*.js\"",
     "build": "rollup -c && rollup -c --environment DIST",
     "prepublishOnly": "npm run lint && npm run build",
-    "start": "webpack-dev-server --define examplesDir=./examples"
+    "start": "runnn"
   },
   "repository": "gt3/react-ultra",
   "author": "Ankit Patel <gt3.someday@gmail.com>",
@@ -20,7 +20,6 @@
     "@gt3/eslint-config": "gist:eb3f2c746d399500ec5d8937ecee59b3",
     "babel-core": "^6.25.0",
     "babel-jest": "^20.0.3",
-    "babel-loader": "^7.1.1",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-rewire": "^1.1.0",
     "babel-plugin-transform-es2015-destructuring": "^6.23.0",
@@ -30,29 +29,19 @@
     "babel-preset-es2016": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^5.0.1",
-    "css-loader": "^0.28.4",
     "eslint": "^4.3.0",
-    "glob": "^7.1.2",
-    "html-loader": "^0.4.5",
     "jest": "^20.0.4",
-    "markdown-loader": "^2.0.0",
     "prettier": "^1.5.3",
-    "prop-types": "^15.5.10",
-    "react": "^16.0.0-alpha.13",
-    "react-dom": "^16.0.0-alpha.13",
     "rollup": "^0.45.2",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
-    "style-loader": "^0.18.2",
-    "uglify-es": "^3.0.26",
-    "ultra": "^0.7.0",
-    "webpack": "^3.0.0",
-    "webpack-dev-server": "^2.5.0"
+    "uglify-es": "^3.0.26"
   },
   "peerDependencies": {
     "ultra": "^0.7.0",
+    "prop-types": "*",
     "react": "^15.0.0-0 || ^16.0.0-0"
   },
   "eslintConfig": {
