@@ -71,7 +71,7 @@ newsMatch = match([spec('/news/sports')(next), spec('/news/politics')(next)])
 News = () =>
   <div>
     <h1>News Home</h1>
-    <Use matchers={newsMatcher} dispatch={true} />
+    <Use matchers={newsMatch} dispatch={true} />
   </div>
 
 export default News

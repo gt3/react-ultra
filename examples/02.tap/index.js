@@ -1,8 +1,7 @@
-import React, { Component, createElement } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { render } from 'react-dom'
-import { spec, check, match, prefixMatch, appendPath, parseQS } from 'ultra'
-import { A, Use } from 'react-ultra'
+import { spec, check, match, prefixMatch } from 'ultra'
+import { Use } from 'react-ultra'
 
 function pipe(...fns) {
   function invoke(v) {
