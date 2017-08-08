@@ -79,7 +79,7 @@ export default News
 
 The `<News />` component *prepends* its matchers to the router by rendering `<Use />`. It adds the news section matchers on mount and removes on unmount.
 
-For more full-proof examples, check out the examples directory.
+Try out code samples here: [ultra router examples](https://github.com/gt3/ultra-router#resources).
 
 ### License
 
